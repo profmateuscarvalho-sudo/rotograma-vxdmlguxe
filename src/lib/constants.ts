@@ -1,0 +1,90 @@
+import { RiskType } from '@/types'
+
+export const DEFAULT_CATALOG: RiskType[] = [
+  {
+    id: '1',
+    name: 'Buraco',
+    iconName: 'AlertCircle',
+    baseWeight: 2,
+    defaultSeverity: 3,
+    defaultProbability: 4,
+  },
+  {
+    id: '2',
+    name: 'Rotatória',
+    iconName: 'CircleDashed',
+    baseWeight: 1,
+    defaultSeverity: 2,
+    defaultProbability: 5,
+  },
+  {
+    id: '3',
+    name: 'Polícia',
+    iconName: 'ShieldAlert',
+    baseWeight: 1,
+    defaultSeverity: 1,
+    defaultProbability: 3,
+  },
+  {
+    id: '4',
+    name: 'Cruzamento',
+    iconName: 'Crosshair',
+    baseWeight: 3,
+    defaultSeverity: 4,
+    defaultProbability: 3,
+  },
+  {
+    id: '5',
+    name: 'Curva Perigosa',
+    iconName: 'TrendingUp',
+    baseWeight: 4,
+    defaultSeverity: 4,
+    defaultProbability: 4,
+  },
+  {
+    id: '6',
+    name: 'Animal na Pista',
+    iconName: 'Bird',
+    baseWeight: 5,
+    defaultSeverity: 5,
+    defaultProbability: 2,
+  },
+  {
+    id: '7',
+    name: 'Neblina',
+    iconName: 'CloudFog',
+    baseWeight: 3,
+    defaultSeverity: 3,
+    defaultProbability: 3,
+  },
+  {
+    id: '8',
+    name: 'Chuva Forte',
+    iconName: 'CloudRain',
+    baseWeight: 4,
+    defaultSeverity: 4,
+    defaultProbability: 3,
+  },
+  {
+    id: '9',
+    name: 'Trânsito',
+    iconName: 'CarFront',
+    baseWeight: 2,
+    defaultSeverity: 2,
+    defaultProbability: 5,
+  },
+  {
+    id: '10',
+    name: 'Acidente',
+    iconName: 'AlertOctagon',
+    baseWeight: 5,
+    defaultSeverity: 5,
+    defaultProbability: 1,
+  },
+]
+
+export const LEVEL_THRESHOLDS = {
+  BAIXO: 10,
+  MEDIO: 30,
+  ALTO: 60,
+}
