@@ -16,8 +16,7 @@ export interface Route {
   name: string
   origin: string
   destination: string
-  driver: string
-  vehicle: string
+  evaluator: string
   kmPerSegment: number
   status: 'em_andamento' | 'concluido'
   date: string
@@ -29,6 +28,7 @@ export interface Segment {
   number: number
   startKm: number
   endKm: number
+  observation?: string
 }
 
 export interface RiskEvent {
@@ -38,6 +38,7 @@ export interface RiskEvent {
   riskTypeId: string
   timestamp: number
   note?: string
+  videoTimestamp?: string
   photoUrl?: string
   synced: boolean
 }

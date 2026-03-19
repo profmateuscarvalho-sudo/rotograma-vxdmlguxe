@@ -14,8 +14,7 @@ export default function NewRoute() {
     name: '',
     origin: '',
     destination: '',
-    driver: '',
-    vehicle: '',
+    evaluator: '',
     kmPerSegment: '10',
   })
 
@@ -89,27 +88,15 @@ export default function NewRoute() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="driver">Nome do Motorista</Label>
-                <Input
-                  id="driver"
-                  required
-                  placeholder="João Silva"
-                  value={formData.driver}
-                  onChange={(e) => setFormData({ ...formData, driver: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="vehicle">Placa do Veículo</Label>
-                <Input
-                  id="vehicle"
-                  required
-                  placeholder="ABC-1234"
-                  value={formData.vehicle}
-                  onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="evaluator">Nome do Avaliador</Label>
+              <Input
+                id="evaluator"
+                required
+                placeholder="Ex: Ana Silva"
+                value={formData.evaluator}
+                onChange={(e) => setFormData({ ...formData, evaluator: e.target.value })}
+              />
             </div>
 
             <div className="space-y-2 pb-4">

@@ -5,6 +5,7 @@ import { RiskButton } from '@/components/field/RiskButton'
 import { RiskDrawer } from '@/components/field/RiskDrawer'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { ChevronRight, Flag } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { RiskType, RiskEvent } from '@/types'
@@ -12,13 +13,14 @@ import { RiskType, RiskEvent } from '@/types'
 export default function FieldOperation() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { state, addEvent, removeEvent, completeRoute } = useAppStore()
+  const { state, addEvent, removeEvent, completeRoute, updateSegment } = useAppStore()
   const { toast } = useToast()
 
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
   const [flash, setFlash] = useState(false)
   const [drawerEventId, setDrawerEventId] = useState<string | null>(null)
   const [drawerRiskName, setDrawerRiskName] = useState('')
+  const [segmentObservation, setSegmentObservation] = useState('')
 
   const route = state.routes.find((r) => r.id === id)
   const segments = state.segments
@@ -33,7 +35,17 @@ export default function FieldOperation() {
     if (route?.status === 'concluido') navigate(`/routes/${id}/report`)
   }, [route, navigate, id])
 
+  useEffect(() => {
+    setSegmentObservation(currentSegment?.observation || '')
+  }, [currentSegment?.id, currentSegment?.observation])
+
   if (!route || !currentSegment) return null
+
+  const handleObservationBlur = () => {
+    if (currentSegment && currentSegment.observation !== segmentObservation) {
+      updateSegment(currentSegment.id, { observation: segmentObservation })
+    }
+  }
 
   const handleLogRisk = (risk: RiskType) => {
     if (navigator.vibrate) navigator.vibrate(50)
@@ -87,7 +99,6 @@ export default function FieldOperation() {
     <div
       className={`flex flex-col h-screen transition-colors duration-200 ${flash ? 'bg-blue-100' : 'bg-slate-100'}`}
     >
-      {/* Header */}
       <div className="bg-white px-4 py-4 shadow-sm z-10 sticky top-0">
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -114,8 +125,7 @@ export default function FieldOperation() {
         <Progress value={progress} className="h-3 rounded-full" />
       </div>
 
-      {/* Grid */}
-      <div className="flex-1 overflow-y-auto p-4 pb-12">
+      <div className="flex-1 overflow-y-auto p-4 pb-12 space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {state.catalog.map((risk) => {
             const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
@@ -129,6 +139,17 @@ export default function FieldOperation() {
               />
             )
           })}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-slate-700">Observações do Trecho</label>
+          <Textarea
+            placeholder="Adicione notas gerais sobre as condições deste trecho..."
+            className="resize-none h-24 bg-white shadow-sm"
+            value={segmentObservation}
+            onChange={(e) => setSegmentObservation(e.target.value)}
+            onBlur={handleObservationBlur}
+          />
         </div>
       </div>
 

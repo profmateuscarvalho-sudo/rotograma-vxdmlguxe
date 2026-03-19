@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Camera } from 'lucide-react'
 import { useAppStore } from '@/store/AppContext'
 import { toast } from '@/hooks/use-toast'
@@ -22,18 +23,20 @@ interface RiskDrawerProps {
 export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const { state, updateEvent } = useAppStore()
   const [note, setNote] = useState('')
+  const [videoTimestamp, setVideoTimestamp] = useState('')
 
   useEffect(() => {
     if (eventId) {
       const event = state.events.find((e) => e.id === eventId)
       setNote(event?.note || '')
+      setVideoTimestamp(event?.videoTimestamp || '')
     }
   }, [eventId, state.events])
 
   const handleSave = () => {
     if (eventId) {
-      updateEvent(eventId, { note })
-      toast({ title: 'Observação salva', duration: 2000 })
+      updateEvent(eventId, { note, videoTimestamp })
+      toast({ title: 'Detalhes salvos', duration: 2000 })
     }
     onClose()
   }
@@ -45,7 +48,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
           <DrawerHeader>
             <DrawerTitle>Detalhes: {riskName}</DrawerTitle>
             <DrawerDescription>
-              Adicione informações extras ou fotos para este risco.
+              Adicione informações extras, fotos ou tempo da gravação.
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0 space-y-4">
@@ -56,6 +59,14 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
               <Camera className="w-8 h-8 text-slate-400" />
               <span className="text-slate-500">Tirar Foto (Simulado)</span>
             </Button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tempo de Gravação</label>
+              <Input
+                placeholder="Ex: 14:32:05"
+                value={videoTimestamp}
+                onChange={(e) => setVideoTimestamp(e.target.value)}
+              />
+            </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Observações</label>
               <Textarea

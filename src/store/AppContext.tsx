@@ -8,6 +8,7 @@ interface AppContextType {
   addEvent: (event: RiskEvent) => void
   updateEvent: (id: string, updates: Partial<RiskEvent>) => void
   removeEvent: (id: string) => void
+  updateSegment: (id: string, updates: Partial<Segment>) => void
   completeRoute: (id: string) => void
   updateCatalog: (catalog: RiskType[]) => void
   addCatalogRisk: (risk: RiskType) => void
@@ -64,6 +65,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setState((prev) => ({ ...prev, events: prev.events.filter((e) => e.id !== id) }))
   }
 
+  const updateSegment = (id: string, updates: Partial<Segment>) => {
+    setState((prev) => ({
+      ...prev,
+      segments: prev.segments.map((s) => (s.id === id ? { ...s, ...updates } : s)),
+    }))
+  }
+
   const completeRoute = (id: string) => {
     setState((prev) => ({
       ...prev,
@@ -112,6 +120,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addEvent,
         updateEvent,
         removeEvent,
+        updateSegment,
         completeRoute,
         updateCatalog,
         addCatalogRisk,
