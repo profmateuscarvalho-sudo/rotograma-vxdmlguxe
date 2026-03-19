@@ -7,7 +7,7 @@ export const DesktopSidebar = ({ className }: { className?: string }) => {
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/routes/new', icon: PlusCircle, label: 'Nova Rota' },
-    { to: '/catalog', icon: BookOpen, label: 'Catálogo' },
+    { to: '/catalog', icon: BookOpen, label: 'Riscos' },
     { to: '/settings', icon: Settings, label: 'Configurações' },
   ]
 
@@ -42,7 +42,7 @@ export const MobileBottomNav = ({ className }: { className?: string }) => {
   const navItems = [
     { to: '/', icon: Home, label: 'Início' },
     { to: '/routes/new', icon: PlusCircle, label: 'Nova Rota' },
-    { to: '/catalog', icon: BookOpen, label: 'Catálogo' },
+    { to: '/catalog', icon: BookOpen, label: 'Riscos' },
   ]
 
   return (

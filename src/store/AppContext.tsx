@@ -10,6 +10,9 @@ interface AppContextType {
   removeEvent: (id: string) => void
   completeRoute: (id: string) => void
   updateCatalog: (catalog: RiskType[]) => void
+  addCatalogRisk: (risk: RiskType) => void
+  updateCatalogRisk: (id: string, updates: Partial<RiskType>) => void
+  removeCatalogRisk: (id: string) => void
   markAsSynced: (eventIds: string[]) => void
   clearData: () => void
 }
@@ -72,6 +75,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setState((prev) => ({ ...prev, catalog }))
   }
 
+  const addCatalogRisk = (risk: RiskType) => {
+    setState((prev) => ({ ...prev, catalog: [...prev.catalog, risk] }))
+  }
+
+  const updateCatalogRisk = (id: string, updates: Partial<RiskType>) => {
+    setState((prev) => ({
+      ...prev,
+      catalog: prev.catalog.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+    }))
+  }
+
+  const removeCatalogRisk = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      catalog: prev.catalog.filter((r) => r.id !== id),
+    }))
+  }
+
   const markAsSynced = (eventIds: string[]) => {
     setState((prev) => ({
       ...prev,
@@ -93,6 +114,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         removeEvent,
         completeRoute,
         updateCatalog,
+        addCatalogRisk,
+        updateCatalogRisk,
+        removeCatalogRisk,
         markAsSynced,
         clearData,
       }}

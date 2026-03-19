@@ -8,6 +8,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 2,
     defaultSeverity: 3,
     defaultProbability: 4,
+    category: 'Via',
+    description: 'Irregularidades estruturais ou buracos na pista',
   },
   {
     id: '2',
@@ -16,6 +18,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 1,
     defaultSeverity: 2,
     defaultProbability: 5,
+    category: 'Infraestrutura',
+    description: 'Interseção em círculo exigindo redução de velocidade',
   },
   {
     id: '3',
@@ -24,6 +28,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 1,
     defaultSeverity: 1,
     defaultProbability: 3,
+    category: 'Segurança',
+    description: 'Posto policial ou fiscalização na rodovia',
   },
   {
     id: '4',
@@ -32,6 +38,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 3,
     defaultSeverity: 4,
     defaultProbability: 3,
+    category: 'Infraestrutura',
+    description: 'Interseção perigosa com vias secundárias',
   },
   {
     id: '5',
@@ -40,6 +48,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 4,
     defaultSeverity: 4,
     defaultProbability: 4,
+    category: 'Via',
+    description: 'Curva acentuada com risco de tombamento ou saída de pista',
   },
   {
     id: '6',
@@ -48,6 +58,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 5,
     defaultSeverity: 5,
     defaultProbability: 2,
+    category: 'Fauna',
+    description: 'Presença de animais silvestres ou de grande porte',
   },
   {
     id: '7',
@@ -56,6 +68,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 3,
     defaultSeverity: 3,
     defaultProbability: 3,
+    category: 'Clima',
+    description: 'Baixa visibilidade devido a condições climáticas',
   },
   {
     id: '8',
@@ -64,6 +78,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 4,
     defaultSeverity: 4,
     defaultProbability: 3,
+    category: 'Clima',
+    description: 'Risco de aquaplanagem e baixa visibilidade',
   },
   {
     id: '9',
@@ -72,6 +88,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 2,
     defaultSeverity: 2,
     defaultProbability: 5,
+    category: 'Trânsito',
+    description: 'Congestionamento ou lentidão na via',
   },
   {
     id: '10',
@@ -80,6 +98,8 @@ export const DEFAULT_CATALOG: RiskType[] = [
     baseWeight: 5,
     defaultSeverity: 5,
     defaultProbability: 1,
+    category: 'Trânsito',
+    description: 'Ocorrência de colisão ou interrupção grave no trajeto',
   },
 ]
 

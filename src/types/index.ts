@@ -7,6 +7,8 @@ export interface RiskType {
   baseWeight: number
   defaultSeverity: number
   defaultProbability: number
+  category?: string
+  description?: string
 }
 
 export interface Route {

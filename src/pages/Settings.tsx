@@ -49,7 +49,8 @@ export default function Settings() {
               <Trash2 className="w-4 h-4 mr-2" /> Limpar Todos os Dados
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              Isso apagará todas as rotas em andamento, concluídas e o catálogo personalizado.
+              Isso apagará todas as rotas em andamento, concluídas e a lista de riscos
+              personalizada.
             </p>
           </div>
         </CardContent>
