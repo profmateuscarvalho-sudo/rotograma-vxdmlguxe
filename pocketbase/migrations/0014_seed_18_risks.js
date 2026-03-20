@@ -12,6 +12,12 @@ migrate(
     }
     app.save(risksCol)
 
+    // Delete existing risks first to avoid foreign key constraint errors
+    const existingRisks = app.findRecordsByFilter('risks', '1=1', '', 10000, 0)
+    for (let record of existingRisks) {
+      app.delete(record)
+    }
+
     const riskTypesCol = app.findCollectionByNameOrId('risk_types')
     const existing = app.findRecordsByFilter('risk_types', '1=1', '', 1000, 0)
     for (let record of existing) {
