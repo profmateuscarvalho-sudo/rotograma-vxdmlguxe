@@ -37,6 +37,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const saved = localStorage.getItem('rotograma_state')
       if (saved) {
         const parsed = JSON.parse(saved)
+        // Ensure catalog meets the new minimum structure requirements (at least 24 items)
+        if (!parsed.catalog || parsed.catalog.length < 24) {
+          parsed.catalog = DEFAULT_CATALOG
+        }
         return { ...initialState, ...parsed }
       }
     } catch (e) {

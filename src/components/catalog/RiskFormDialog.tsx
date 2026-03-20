@@ -106,6 +106,21 @@ const ICONS = [
   'Shuffle',
   'Building',
   'User',
+
+  // Newly added for comprehensive traffic signage
+  'CornerUpRight',
+  'Split',
+  'ZapOff',
+  'Dog',
+  'Ban',
+  'Eraser',
+  'Cloud',
+  'ArrowLeftRight',
+  'Shrink',
+  'Bridge',
+  'Building2',
+  'GraduationCap',
+  'SignalLow',
 ]
 
 const riskSchema = z.object({
