@@ -24,16 +24,19 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const { state, updateEvent } = useAppStore()
   const [note, setNote] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
+  const [photoUrl, setPhotoUrl] = useState('')
   const [timestamp, setTimestamp] = useState<number>(Date.now())
 
   const [isRecording, setIsRecording] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (eventId) {
       const event = state.events.find((e) => e.id === eventId)
       setNote(event?.note || '')
       setAudioUrl(event?.audioUrl || '')
+      setPhotoUrl(event?.photoUrl || '')
       setTimestamp(event?.timestamp || Date.now())
     }
   }, [eventId, state.events])
@@ -73,9 +76,17 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
     }
   }
 
+  const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      setPhotoUrl(url)
+    }
+  }
+
   const handleSave = () => {
     if (eventId) {
-      updateEvent(eventId, { note, audioUrl, timestamp })
+      updateEvent(eventId, { note, audioUrl, timestamp, photoUrl })
       toast({ title: 'Detalhes salvos', duration: 2000 })
     }
     onClose()
@@ -118,12 +129,27 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
               </div>
             </div>
 
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handlePhotoCapture}
+            />
             <Button
               variant="outline"
-              className="w-full h-24 flex flex-col gap-2 bg-slate-50 border-dashed border-2"
+              className="w-full h-24 flex flex-col gap-2 bg-slate-50 border-dashed border-2 p-0 overflow-hidden relative"
+              onClick={() => fileInputRef.current?.click()}
             >
-              <Camera className="w-8 h-8 text-slate-400" />
-              <span className="text-slate-500">Tirar Foto do Local</span>
+              {photoUrl ? (
+                <img src={photoUrl} className="w-full h-full object-cover" alt="Captured" />
+              ) : (
+                <>
+                  <Camera className="w-8 h-8 text-slate-400" />
+                  <span className="text-slate-500">Tirar Foto do Local</span>
+                </>
+              )}
             </Button>
 
             <div className="space-y-2">

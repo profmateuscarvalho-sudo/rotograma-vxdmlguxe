@@ -43,9 +43,65 @@ const ICONS = [
   'CloudRain',
   'CloudFog',
   'TrendingUp',
+  'TrendingDown',
   'Crosshair',
   'CircleDashed',
   'ShieldAlert',
+  'Signpost',
+  'Map',
+  'Navigation',
+  'MapPin',
+  'Compass',
+  'Waves',
+  'Droplets',
+  'Wind',
+  'Snowflake',
+  'Sun',
+  'Moon',
+  'Thermometer',
+  'Activity',
+  'Anchor',
+  'TrainTrack',
+  'TrainFront',
+  'BusFront',
+  'Tractor',
+  'Construction',
+  'Wrench',
+  'Hammer',
+  'HardHat',
+  'Barrier',
+  'Flag',
+  'Milestone',
+  'Camera',
+  'Cctv',
+  'Video',
+  'Eye',
+  'EyeOff',
+  'Volume2',
+  'VolumeX',
+  'Zap',
+  'Power',
+  'BatteryWarning',
+  'Fuel',
+  'Flame',
+  'ThumbsDown',
+  'XCircle',
+  'MinusCircle',
+  'HelpCircle',
+  'Info',
+  'MessageCircleWarning',
+  'RadioTower',
+  'WifiOff',
+  'Signal',
+  'PhoneOff',
+  'Route',
+  'Waypoints',
+  'ArrowRightToLine',
+  'Car',
+  'CarTaxiFront',
+  'Bus',
+  'Plane',
+  'Ship',
 ]
 
 const riskSchema = z.object({
@@ -132,17 +188,18 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                 render={({ field }) => (
                   <FormItem className="col-span-2">
                     <FormLabel>Ícone</FormLabel>
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-2 max-h-40 overflow-y-auto p-1 border rounded-md bg-slate-50">
                       {ICONS.map((icon) => (
                         <div
                           key={icon}
                           className={cn(
                             'p-2 border rounded-md cursor-pointer flex items-center justify-center transition-colors',
                             field.value === icon
-                              ? 'bg-blue-100 border-blue-500 text-blue-600'
-                              : 'bg-white text-slate-600 hover:bg-slate-50',
+                              ? 'bg-blue-100 border-blue-500 text-blue-600 shadow-sm'
+                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100',
                           )}
                           onClick={() => field.onChange(icon)}
+                          title={icon}
                         >
                           <IconRenderer name={icon} className="w-5 h-5" />
                         </div>

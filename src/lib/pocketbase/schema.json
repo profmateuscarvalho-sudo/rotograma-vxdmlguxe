@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-20T00:39:40.164Z",
+  "generatedAt": "2026-03-20T01:05:00.716Z",
   "collections": [
     {
       "name": "users",
@@ -243,6 +243,53 @@
           "type": "file",
           "required": false,
           "system": false
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "route_observations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != \"\"",
+        "view": "@request.auth.id != \"\"",
+        "create": "@request.auth.id != \"\"",
+        "update": "@request.auth.id != \"\"",
+        "delete": "@request.auth.id != \"\""
+      },
+      "fields": [
+        {
+          "name": "route_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "routes"
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "audio",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": []

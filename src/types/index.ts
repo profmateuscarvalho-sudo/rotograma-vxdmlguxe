@@ -42,9 +42,20 @@ export interface RiskEvent {
   synced: boolean
 }
 
+export interface Observation {
+  id: string
+  routeId: string
+  segmentId: string
+  note: string
+  audioUrl?: string
+  timestamp: number
+  synced: boolean
+}
+
 export interface AppState {
   routes: Route[]
   segments: Segment[]
   events: RiskEvent[]
   catalog: RiskType[]
+  observations?: Observation[]
 }

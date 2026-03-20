@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { AppState, RiskEvent, RiskType, Route, Segment } from '@/types'
+import { AppState, RiskEvent, RiskType, Route, Segment, Observation } from '@/types'
 import { DEFAULT_CATALOG } from '@/lib/constants'
+import pb from '@/lib/pocketbase/client'
 
 interface AppContextType {
   state: AppState
@@ -15,6 +16,7 @@ interface AppContextType {
   addCatalogRisk: (risk: RiskType) => void
   updateCatalogRisk: (id: string, updates: Partial<RiskType>) => void
   removeCatalogRisk: (id: string) => void
+  addObservation: (observation: Observation) => void
   markAsSynced: (eventIds: string[]) => void
   clearData: () => void
 }
@@ -26,13 +28,17 @@ const initialState: AppState = {
   segments: [],
   events: [],
   catalog: DEFAULT_CATALOG,
+  observations: [],
 }
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(() => {
     try {
       const saved = localStorage.getItem('rotograma_state')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return { ...initialState, ...parsed }
+      }
     } catch (e) {
       console.error('Failed to load state', e)
     }
@@ -57,6 +63,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       routes: prev.routes.filter((r) => r.id !== id),
       segments: prev.segments.filter((s) => s.routeId !== id),
       events: prev.events.filter((e) => e.routeId !== id),
+      observations: prev.observations?.filter((o) => o.routeId !== id) || [],
     }))
   }
 
@@ -111,6 +118,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }))
   }
 
+  const addObservation = async (observation: Observation) => {
+    setState((prev) => ({
+      ...prev,
+      observations: [...(prev.observations || []), observation],
+    }))
+
+    try {
+      if (pb.authStore.isValid) {
+        const formData = new FormData()
+        const routeRecord = await pb
+          .collection('routes')
+          .getFirstListItem(`id="${observation.routeId}"`)
+          .catch(() => null)
+
+        if (routeRecord) {
+          formData.append('route_id', routeRecord.id)
+          formData.append('note', observation.note)
+          if (observation.audioUrl && observation.audioUrl.startsWith('blob:')) {
+            const response = await fetch(observation.audioUrl)
+            const blob = await response.blob()
+            formData.append('audio', blob, 'audio.webm')
+          }
+          await pb.collection('route_observations').create(formData)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to sync observation to backend', err)
+    }
+  }
+
   const markAsSynced = (eventIds: string[]) => {
     setState((prev) => ({
       ...prev,
@@ -137,6 +174,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addCatalogRisk,
         updateCatalogRisk,
         removeCatalogRisk,
+        addObservation,
         markAsSynced,
         clearData,
       }}
