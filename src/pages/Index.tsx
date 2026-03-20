@@ -1,20 +1,32 @@
 import React from 'react'
 import { useAppStore } from '@/store/AppContext'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Route as RouteIcon, AlertTriangle, FileText, CheckCircle } from 'lucide-react'
+import { Route as RouteIcon, AlertTriangle, FileText, CheckCircle, Trash2 } from 'lucide-react'
 import { calculateSegmentScore, getRiskLevel, getRiskColor } from '@/lib/risk-utils'
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog'
+import { toast } from '@/hooks/use-toast'
 
 export default function Index() {
-  const { state } = useAppStore()
+  const navigate = useNavigate()
+  const { state, removeRoute } = useAppStore()
   const { routes, segments, events, catalog } = state
 
   const totalRoutes = routes.length
   const inProgress = routes.filter((r) => r.status === 'em_andamento').length
 
-  // Calculate average risk
   const completedRoutes = routes.filter((r) => r.status === 'concluido')
   let totalScore = 0
   let totalSegmentsCalculated = 0
@@ -27,6 +39,12 @@ export default function Index() {
   })
   const avgScore = totalSegmentsCalculated ? totalScore / totalSegmentsCalculated : 0
   const avgRiskLevel = getRiskLevel(avgScore)
+
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    removeRoute(id)
+    toast({ title: 'Rota excluída com sucesso' })
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -97,48 +115,82 @@ export default function Index() {
         ) : (
           <div className="grid gap-3">
             {routes.map((route) => (
-              <Link
+              <Card
                 key={route.id}
-                to={
-                  route.status === 'em_andamento'
-                    ? `/routes/${route.id}/field`
-                    : `/routes/${route.id}/report`
+                onClick={() =>
+                  navigate(
+                    route.status === 'em_andamento'
+                      ? `/routes/${route.id}/field`
+                      : `/routes/${route.id}/report`,
+                  )
                 }
+                className="hover:border-blue-300 transition-colors cursor-pointer group"
               >
-                <Card className="hover:border-blue-300 transition-colors cursor-pointer group">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-lg group-hover:text-blue-600 transition-colors">
-                        {route.name}
-                      </h4>
-                      <div className="text-sm text-slate-500 flex gap-2 items-center mt-1">
-                        <span>
-                          {route.origin} → {route.destination}
-                        </span>
-                        <span>•</span>
-                        <span>{new Date(route.date).toLocaleDateString('pt-BR')}</span>
-                      </div>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-lg group-hover:text-blue-600 transition-colors">
+                      {route.name}
+                    </h4>
+                    <div className="text-sm text-slate-500 flex gap-2 items-center mt-1">
+                      <span>
+                        {route.origin} → {route.destination}
+                      </span>
+                      <span>•</span>
+                      <span>{new Date(route.date).toLocaleDateString('pt-BR')}</span>
                     </div>
-                    <div>
-                      {route.status === 'em_andamento' ? (
-                        <Badge
-                          variant="secondary"
-                          className="bg-blue-100 text-blue-700 hover:bg-blue-100"
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {route.status === 'em_andamento' ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-100 text-blue-700 hover:bg-blue-100"
+                      >
+                        Em Andamento
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-emerald-600 border-emerald-200 flex items-center gap-1"
+                      >
+                        <CheckCircle className="w-3 h-3" /> Concluído
+                      </Badge>
+                    )}
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          Em Andamento
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="text-emerald-600 border-emerald-200 flex items-center gap-1"
-                        >
-                          <CheckCircle className="w-3 h-3" /> Concluído
-                        </Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir Rota?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta ação é irreversível. A rota e todos os seus eventos registrados
+                            serão apagados permanentemente do sistema.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                            Cancelar
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-600 text-white hover:bg-red-700"
+                            onClick={(e) => handleDelete(e, route.id)}
+                          >
+                            Excluir Rota
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

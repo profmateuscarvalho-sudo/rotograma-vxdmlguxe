@@ -3,6 +3,7 @@ import { RiskType } from '@/types'
 import { IconRenderer } from '@/components/icons'
 import { useLongPress } from '@/hooks/useLongPress'
 import { cn } from '@/lib/utils'
+import { getRiskWeightStyles } from '@/lib/risk-utils'
 
 interface RiskButtonProps {
   risk: RiskType
@@ -18,26 +19,24 @@ export function RiskButton({ risk, count, onTap, onLongPressRisk }: RiskButtonPr
     { delay: 600 },
   )
 
+  const styles = getRiskWeightStyles(risk.baseWeight, count > 0)
+
   return (
     <button
       {...handlers}
       className={cn(
-        'relative flex flex-col items-center justify-center p-4 min-h-[100px] rounded-2xl bg-white border-2 border-slate-200 shadow-sm transition-all duration-100 ease-out select-none outline-none touch-manipulation',
-        'active:scale-95 active:bg-slate-100',
-        count > 0 && 'border-blue-300 bg-blue-50',
+        'relative flex flex-col items-center justify-center p-4 min-h-[100px] rounded-2xl border-2 shadow-sm transition-all duration-100 ease-out select-none outline-none touch-manipulation',
+        styles,
+        'active:scale-95 active:brightness-95',
+        count > 0 && 'ring-2 ring-offset-2 ring-slate-300',
       )}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
-      <IconRenderer
-        name={risk.iconName}
-        className={cn('w-10 h-10 mb-2', count > 0 ? 'text-blue-600' : 'text-slate-700')}
-      />
-      <span className="font-bold text-sm text-slate-800 text-center leading-tight">
-        {risk.name}
-      </span>
+      <IconRenderer name={risk.iconName} className="w-10 h-10 mb-2 text-current" />
+      <span className="font-bold text-sm text-center leading-tight">{risk.name}</span>
 
       {count > 0 && (
-        <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-md animate-in zoom-in">
+        <span className="absolute -top-2 -right-2 bg-slate-900 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-md animate-in zoom-in">
           {count}
         </span>
       )}

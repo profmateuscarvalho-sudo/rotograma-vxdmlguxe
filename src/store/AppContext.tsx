@@ -5,6 +5,7 @@ import { DEFAULT_CATALOG } from '@/lib/constants'
 interface AppContextType {
   state: AppState
   addRoute: (route: Route, segments: Segment[]) => void
+  removeRoute: (id: string) => void
   addEvent: (event: RiskEvent) => void
   updateEvent: (id: string, updates: Partial<RiskEvent>) => void
   removeEvent: (id: string) => void
@@ -47,6 +48,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...prev,
       routes: [route, ...prev.routes],
       segments: [...prev.segments, ...segments],
+    }))
+  }
+
+  const removeRoute = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      routes: prev.routes.filter((r) => r.id !== id),
+      segments: prev.segments.filter((s) => s.routeId !== id),
+      events: prev.events.filter((e) => e.routeId !== id),
     }))
   }
 
@@ -117,6 +127,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         state,
         addRoute,
+        removeRoute,
         addEvent,
         updateEvent,
         removeEvent,

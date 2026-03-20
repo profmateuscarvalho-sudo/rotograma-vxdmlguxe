@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Drawer,
   DrawerContent,
@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
-import { Camera } from 'lucide-react'
+import { Camera, Mic, Square } from 'lucide-react'
 import { useAppStore } from '@/store/AppContext'
 import { toast } from '@/hooks/use-toast'
 
@@ -23,19 +23,59 @@ interface RiskDrawerProps {
 export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const { state, updateEvent } = useAppStore()
   const [note, setNote] = useState('')
-  const [videoTimestamp, setVideoTimestamp] = useState('')
+  const [audioUrl, setAudioUrl] = useState('')
+  const [timestamp, setTimestamp] = useState<number>(Date.now())
+
+  const [isRecording, setIsRecording] = useState(false)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
 
   useEffect(() => {
     if (eventId) {
       const event = state.events.find((e) => e.id === eventId)
       setNote(event?.note || '')
-      setVideoTimestamp(event?.videoTimestamp || '')
+      setAudioUrl(event?.audioUrl || '')
+      setTimestamp(event?.timestamp || Date.now())
     }
   }, [eventId, state.events])
 
+  const handleToggleAudio = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop()
+      setIsRecording(false)
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const recorder = new MediaRecorder(stream)
+        const chunks: Blob[] = []
+        recorder.ondataavailable = (e) => chunks.push(e.data)
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' })
+          const url = URL.createObjectURL(blob)
+          setAudioUrl(url)
+          stream.getTracks().forEach((t) => t.stop())
+        }
+        recorder.start()
+        mediaRecorderRef.current = recorder
+        setIsRecording(true)
+      } catch (err) {
+        console.error(err)
+        toast({
+          title: 'Microfone indisponível',
+          description: 'Simulando gravação de áudio...',
+          duration: 2000,
+        })
+        setIsRecording(true)
+        setTimeout(() => {
+          setIsRecording(false)
+          setAudioUrl('simulated_audio.webm')
+        }, 2000)
+      }
+    }
+  }
+
   const handleSave = () => {
     if (eventId) {
-      updateEvent(eventId, { note, videoTimestamp })
+      updateEvent(eventId, { note, audioUrl, timestamp })
       toast({ title: 'Detalhes salvos', duration: 2000 })
     }
     onClose()
@@ -48,27 +88,46 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
           <DrawerHeader>
             <DrawerTitle>Detalhes: {riskName}</DrawerTitle>
             <DrawerDescription>
-              Adicione informações extras, fotos ou tempo da gravação.
+              Anexe fotos, áudios e observações para o relatório.
             </DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 pb-0 space-y-4">
+          <div className="p-4 pb-0 space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Horário da Ocorrência</label>
+              <Input
+                value={new Date(timestamp).toLocaleString('pt-BR')}
+                disabled
+                className="bg-slate-50 text-slate-600"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nota de Áudio</label>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={isRecording ? 'destructive' : 'outline'}
+                  className={`flex gap-2 transition-all ${audioUrl && !isRecording ? 'w-auto px-3' : 'w-full'}`}
+                  onClick={handleToggleAudio}
+                >
+                  {isRecording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  {isRecording ? 'Parar Gravação' : audioUrl ? 'Regravar' : 'Gravar Áudio'}
+                </Button>
+                {audioUrl && !isRecording && (
+                  <audio controls src={audioUrl} className="h-10 flex-1 max-w-full" />
+                )}
+              </div>
+            </div>
+
             <Button
               variant="outline"
               className="w-full h-24 flex flex-col gap-2 bg-slate-50 border-dashed border-2"
             >
               <Camera className="w-8 h-8 text-slate-400" />
-              <span className="text-slate-500">Tirar Foto (Simulado)</span>
+              <span className="text-slate-500">Tirar Foto do Local</span>
             </Button>
+
             <div className="space-y-2">
-              <label className="text-sm font-medium">Tempo de Gravação</label>
-              <Input
-                placeholder="Ex: 14:32:05"
-                value={videoTimestamp}
-                onChange={(e) => setVideoTimestamp(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Observações</label>
+              <label className="text-sm font-medium">Observações Escritas</label>
               <Textarea
                 placeholder="Descreva a gravidade ou detalhes específicos..."
                 className="resize-none h-24"

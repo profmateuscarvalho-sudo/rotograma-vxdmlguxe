@@ -2,12 +2,18 @@ import React from 'react'
 import { useSync } from '@/hooks/useSync'
 import { CloudOff, RefreshCw, CheckCircle2 } from 'lucide-react'
 import { Badge } from './ui/badge'
+import { cn } from '@/lib/utils'
 
-export const Header = () => {
+export const Header = ({ className }: { className?: string }) => {
   const { isOnline, isSyncing, pendingCount } = useSync()
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 shadow-sm shrink-0">
+    <header
+      className={cn(
+        'h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 shadow-sm shrink-0',
+        className,
+      )}
+    >
       <div className="flex items-center gap-2 md:hidden">
         <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold">
           R
@@ -49,9 +55,6 @@ export const Header = () => {
               <CheckCircle2 className="w-3 h-3" /> Sincronizado
             </Badge>
           )}
-        </div>
-        <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
-          <img src="https://img.usecurling.com/ppl/thumbnail?gender=male&seed=1" alt="User" />
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-20T00:05:25.693Z",
+  "generatedAt": "2026-03-20T00:39:40.164Z",
   "collections": [
     {
       "name": "users",
@@ -231,6 +231,18 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "weight",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "audio",
+          "type": "file",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []

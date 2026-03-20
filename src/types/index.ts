@@ -5,8 +5,6 @@ export interface RiskType {
   name: string
   iconName: string
   baseWeight: number
-  defaultSeverity: number
-  defaultProbability: number
   category?: string
   description?: string
 }
@@ -40,6 +38,7 @@ export interface RiskEvent {
   note?: string
   videoTimestamp?: string
   photoUrl?: string
+  audioUrl?: string
   synced: boolean
 }
 

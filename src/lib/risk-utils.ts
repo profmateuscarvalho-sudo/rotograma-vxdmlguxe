@@ -4,7 +4,6 @@ import { LEVEL_THRESHOLDS } from './constants'
 export const calculateEventScore = (event: RiskEvent, catalog: RiskType[]): number => {
   const riskType = catalog.find((r) => r.id === event.riskTypeId)
   if (!riskType) return 0
-  // Score = weight * quantity (quantity is 1 per event in this model, as each tap is an event)
   return riskType.baseWeight
 }
 
@@ -51,5 +50,30 @@ export const getRiskColorHex = (level: RiskLevel): string => {
       return '#dc2626'
     default:
       return '#e2e8f0'
+  }
+}
+
+export const getRiskWeightStyles = (weight: number, active: boolean) => {
+  switch (weight) {
+    case 1:
+      return active
+        ? 'bg-green-500 border-green-600 text-white'
+        : 'bg-green-50 border-green-200 text-green-700'
+    case 2:
+      return active
+        ? 'bg-blue-500 border-blue-600 text-white'
+        : 'bg-blue-50 border-blue-200 text-blue-700'
+    case 3:
+      return active
+        ? 'bg-yellow-500 border-yellow-600 text-white'
+        : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+    case 4:
+      return active
+        ? 'bg-red-500 border-red-600 text-white'
+        : 'bg-red-50 border-red-200 text-red-700'
+    default:
+      return active
+        ? 'bg-slate-500 border-slate-600 text-white'
+        : 'bg-slate-50 border-slate-200 text-slate-700'
   }
 }

@@ -28,14 +28,32 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { RiskType } from '@/types'
+import { IconRenderer } from '@/components/icons'
+import { cn } from '@/lib/utils'
+
+const ICONS = [
+  'TriangleAlert',
+  'Octagon',
+  'Cone',
+  'CarFront',
+  'Truck',
+  'Bike',
+  'AlertCircle',
+  'Bird',
+  'CloudRain',
+  'CloudFog',
+  'TrendingUp',
+  'Crosshair',
+  'CircleDashed',
+  'ShieldAlert',
+]
 
 const riskSchema = z.object({
   name: z.string().min(1, 'O nome é obrigatório'),
+  iconName: z.string().min(1, 'Selecione um ícone'),
   category: z.string().optional(),
   description: z.string().optional(),
-  baseWeight: z.coerce.number().positive('Deve ser maior que 0'),
-  defaultSeverity: z.coerce.number().min(1).max(5),
-  defaultProbability: z.coerce.number().min(1).max(5),
+  baseWeight: z.coerce.number().min(1).max(4, 'O peso deve ser de 1 a 4'),
 })
 
 type RiskFormValues = z.infer<typeof riskSchema>
@@ -52,11 +70,10 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
     resolver: zodResolver(riskSchema),
     defaultValues: {
       name: '',
+      iconName: 'TriangleAlert',
       category: '',
       description: '',
       baseWeight: 1,
-      defaultSeverity: 1,
-      defaultProbability: 1,
     },
   })
 
@@ -65,30 +82,25 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
       if (risk) {
         form.reset({
           name: risk.name,
+          iconName: risk.iconName || 'TriangleAlert',
           category: risk.category || '',
           description: risk.description || '',
           baseWeight: risk.baseWeight,
-          defaultSeverity: risk.defaultSeverity,
-          defaultProbability: risk.defaultProbability,
         })
       } else {
         form.reset({
           name: '',
+          iconName: 'TriangleAlert',
           category: '',
           description: '',
           baseWeight: 1,
-          defaultSeverity: 1,
-          defaultProbability: 1,
         })
       }
     }
   }, [open, risk, form])
 
   const handleSubmit = (values: RiskFormValues) => {
-    onSave({
-      ...values,
-      iconName: risk?.iconName || 'AlertTriangle',
-    })
+    onSave(values)
   }
 
   return (
@@ -104,7 +116,7 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                 name="name"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="col-span-2 sm:col-span-1">
+                  <FormItem className="col-span-2">
                     <FormLabel>Nome do Risco</FormLabel>
                     <FormControl>
                       <Input placeholder="Ex: Curva fechada" {...field} />
@@ -113,11 +125,39 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                   </FormItem>
                 )}
               />
+
+              <FormField
+                name="iconName"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Ícone</FormLabel>
+                    <div className="grid grid-cols-7 gap-2">
+                      {ICONS.map((icon) => (
+                        <div
+                          key={icon}
+                          className={cn(
+                            'p-2 border rounded-md cursor-pointer flex items-center justify-center transition-colors',
+                            field.value === icon
+                              ? 'bg-blue-100 border-blue-500 text-blue-600'
+                              : 'bg-white text-slate-600 hover:bg-slate-50',
+                          )}
+                          onClick={() => field.onChange(icon)}
+                        >
+                          <IconRenderer name={icon} className="w-5 h-5" />
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 name="category"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="col-span-2 sm:col-span-1">
+                  <FormItem className="col-span-1">
                     <FormLabel>Categoria</FormLabel>
                     <FormControl>
                       <Input placeholder="Ex: Via" {...field} value={field.value || ''} />
@@ -126,6 +166,35 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                   </FormItem>
                 )}
               />
+
+              <FormField
+                name="baseWeight"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-1">
+                    <FormLabel>Peso (1 a 4)</FormLabel>
+                    <Select
+                      onValueChange={(v) => field.onChange(Number(v))}
+                      value={String(field.value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[1, 2, 3, 4].map((n) => (
+                          <SelectItem key={n} value={String(n)}>
+                            {n}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 name="description"
                 control={form.control}
@@ -144,75 +213,6 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                   </FormItem>
                 )}
               />
-              <FormField
-                name="baseWeight"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Peso (Score)</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.5" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-2 gap-2 col-span-2 sm:col-span-1">
-                <FormField
-                  name="defaultSeverity"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Severidade (1-5)</FormLabel>
-                      <Select
-                        onValueChange={(v) => field.onChange(Number(v))}
-                        value={String(field.value)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5].map((n) => (
-                            <SelectItem key={n} value={String(n)}>
-                              {n}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="defaultProbability"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Prob. (1-5)</FormLabel>
-                      <Select
-                        onValueChange={(v) => field.onChange(Number(v))}
-                        value={String(field.value)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5].map((n) => (
-                            <SelectItem key={n} value={String(n)}>
-                              {n}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
