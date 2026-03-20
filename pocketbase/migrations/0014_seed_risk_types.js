@@ -1,7 +1,6 @@
 migrate(
   (app) => {
     const collection = app.findCollectionByNameOrId('risk_types')
-    app.truncateCollection(collection)
 
     const risks = [
       {
@@ -65,16 +64,23 @@ migrate(
     ]
 
     risks.forEach((risk) => {
-      const record = new Record(collection)
-      record.set('name', risk.name)
-      record.set('icon', risk.icon)
-      record.set('baseWeight', risk.baseWeight)
-      record.set('category', risk.category)
-      app.save(record)
+      try {
+        const existing = app.findFirstRecordByData('risk_types', 'name', risk.name)
+        existing.set('icon', risk.icon)
+        existing.set('baseWeight', risk.baseWeight)
+        existing.set('category', risk.category)
+        app.save(existing)
+      } catch {
+        const record = new Record(collection)
+        record.set('name', risk.name)
+        record.set('icon', risk.icon)
+        record.set('baseWeight', risk.baseWeight)
+        record.set('category', risk.category)
+        app.save(record)
+      }
     })
   },
   (app) => {
-    const collection = app.findCollectionByNameOrId('risk_types')
-    app.truncateCollection(collection)
+    // Empty down migration to prevent accidental data loss in risk_types which might be referenced by risks
   },
 )
