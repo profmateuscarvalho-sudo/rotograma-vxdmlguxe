@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -67,13 +67,6 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
-
-            <div className="text-center text-sm text-muted-foreground mt-4">
-              Não tem uma conta?{' '}
-              <Link to="/register" className="text-primary hover:underline font-medium">
-                Crie uma agora
-              </Link>
-            </div>
           </form>
         </CardContent>
       </Card>
