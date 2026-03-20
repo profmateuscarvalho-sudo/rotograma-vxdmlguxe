@@ -12,6 +12,7 @@ import RouteReport from './pages/RouteReport'
 import Catalog from './pages/Catalog'
 import Settings from './pages/Settings'
 import NotFound from './pages/NotFound'
+import Login from './pages/Login'
 
 const App = () => (
   <AppProvider>
@@ -20,6 +21,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/routes/new" element={<NewRoute />} />
