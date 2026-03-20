@@ -1,5 +1,5 @@
-import { RiskEvent, RiskLevel, RiskType } from '@/types'
-import { LEVEL_THRESHOLDS } from './constants'
+import { RiskEvent, RiskLevel, RiskType, RouteRiskLevel } from '@/types'
+import { LEVEL_THRESHOLDS, ROUTE_LEVEL_THRESHOLDS } from './constants'
 
 export const calculateEventScore = (event: RiskEvent, catalog: RiskType[]): number => {
   const riskType = catalog.find((r) => r.id === event.riskTypeId)
@@ -21,6 +21,31 @@ export const getRiskLevel = (score: number): RiskLevel => {
   if (score <= LEVEL_THRESHOLDS.MEDIO) return 'Médio'
   if (score <= LEVEL_THRESHOLDS.ALTO) return 'Alto'
   return 'Crítico'
+}
+
+export const getRouteRiskLevel = (score: number): RouteRiskLevel => {
+  if (score === 0) return 'Sem Riscos'
+  if (score <= ROUTE_LEVEL_THRESHOLDS.BAIXO) return 'Baixo'
+  if (score <= ROUTE_LEVEL_THRESHOLDS.MEDIO) return 'Médio'
+  if (score <= ROUTE_LEVEL_THRESHOLDS.ALTO) return 'Alto'
+  return 'Crítico'
+}
+
+export const getRouteRiskColor = (level: RouteRiskLevel): string => {
+  switch (level) {
+    case 'Sem Riscos':
+      return 'bg-slate-100 text-slate-600 border-slate-200'
+    case 'Baixo':
+      return 'bg-green-500 text-white border-green-600'
+    case 'Médio':
+      return 'bg-yellow-500 text-white border-yellow-600'
+    case 'Alto':
+      return 'bg-orange-500 text-white border-orange-600'
+    case 'Crítico':
+      return 'bg-red-600 text-white border-red-700'
+    default:
+      return 'bg-slate-200 text-slate-800'
+  }
 }
 
 export const getRiskColor = (level: RiskLevel): string => {

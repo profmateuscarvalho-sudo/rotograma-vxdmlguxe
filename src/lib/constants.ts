@@ -129,3 +129,9 @@ export const LEVEL_THRESHOLDS = {
   MEDIO: 30,
   ALTO: 60,
 }
+
+export const ROUTE_LEVEL_THRESHOLDS = {
+  BAIXO: 15,
+  MEDIO: 30,
+  ALTO: 50,
+}

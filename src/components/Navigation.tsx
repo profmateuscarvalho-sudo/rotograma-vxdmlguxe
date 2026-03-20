@@ -1,13 +1,13 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Home, PlusCircle, Settings, LayoutDashboard, Cone } from 'lucide-react'
+import { Home, PlusCircle, Settings, LayoutDashboard, TriangleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export const DesktopSidebar = ({ className }: { className?: string }) => {
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/routes/new', icon: PlusCircle, label: 'Nova Rota' },
-    { to: '/catalog', icon: Cone, label: 'Cadastro de Riscos' },
+    { to: '/catalog', icon: TriangleAlert, label: 'Cadastro de Riscos' },
     { to: '/settings', icon: Settings, label: 'Configurações' },
   ]
 
@@ -42,7 +42,7 @@ export const MobileBottomNav = ({ className }: { className?: string }) => {
   const navItems = [
     { to: '/', icon: Home, label: 'Início' },
     { to: '/routes/new', icon: PlusCircle, label: 'Nova Rota' },
-    { to: '/catalog', icon: Cone, label: 'Cadastro de Riscos' },
+    { to: '/catalog', icon: TriangleAlert, label: 'Cadastro de Riscos' },
   ]
 
   return (

@@ -1,5 +1,7 @@
 export type RiskLevel = 'Baixo' | 'Médio' | 'Alto' | 'Crítico'
 
+export type RouteRiskLevel = 'Sem Riscos' | 'Baixo' | 'Médio' | 'Alto' | 'Crítico'
+
 export interface RiskType {
   id: string
   name: string

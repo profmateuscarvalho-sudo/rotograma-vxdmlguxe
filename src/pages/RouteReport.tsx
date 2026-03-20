@@ -9,6 +9,8 @@ import {
   getRiskLevel,
   getRiskColorHex,
   getRiskWeightStyles,
+  getRouteRiskLevel,
+  getRouteRiskColor,
 } from '@/lib/risk-utils'
 import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera, Video } from 'lucide-react'
 import { IconRenderer } from '@/components/icons'
@@ -40,6 +42,9 @@ export default function RouteReport() {
 
   const avgRouteLevelNum =
     segments.length > 0 ? (totalRouteWeight / segments.length).toFixed(1) : '0.0'
+
+  const overallRouteLevel = getRouteRiskLevel(totalRouteWeight)
+  const overallRouteLevelColor = getRouteRiskColor(overallRouteLevel)
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-10 print:w-full print:max-w-none print:m-0 print:p-0 print:space-y-4">
@@ -91,7 +96,7 @@ export default function RouteReport() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 print:grid-cols-4 print:gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 print:grid-cols-4 print:gap-2">
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 print:border-slate-300">
             <p className="text-sm text-slate-500 mb-1">Total de Eventos</p>
             <p className="text-2xl font-black text-slate-900">{events.length}</p>
@@ -100,20 +105,21 @@ export default function RouteReport() {
             <p className="text-sm text-slate-500 mb-1">Total de Trechos</p>
             <p className="text-2xl font-black text-slate-900">{segments.length}</p>
           </div>
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 print:bg-slate-50 print:border-slate-300">
-            <p className="text-sm text-blue-600 mb-1 font-semibold print:text-slate-600">
-              Nível de Risco da Rota
-            </p>
-            <p className="text-2xl font-black text-blue-900 print:text-slate-900">
-              {totalRouteWeight} <span className="text-sm font-normal">pts</span>
-            </p>
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 print:border-slate-300">
+            <p className="text-sm text-slate-600 mb-1 font-semibold">Risco Global da Rota</p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
+              <span className="text-2xl font-black text-slate-900 leading-none">
+                {totalRouteWeight} <span className="text-sm font-normal text-slate-500">pts</span>
+              </span>
+              <Badge variant="outline" className={`${overallRouteLevelColor} mt-1 sm:mt-0`}>
+                Nível: {overallRouteLevel}
+              </Badge>
+            </div>
           </div>
-          <div className="bg-amber-50 p-4 rounded-lg border border-amber-100 print:bg-slate-50 print:border-slate-300">
-            <p className="text-sm text-amber-700 mb-1 font-semibold print:text-slate-600">
-              Média de Nível de Risco
-            </p>
-            <p className="text-2xl font-black text-amber-900 print:text-slate-900">
-              {avgRouteLevelNum} <span className="text-sm font-normal">pts/trecho</span>
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 print:border-slate-300">
+            <p className="text-sm text-slate-600 mb-1 font-semibold">Média por Trecho</p>
+            <p className="text-2xl font-black text-slate-900 mt-1">
+              {avgRouteLevelNum} <span className="text-sm font-normal text-slate-500">pts</span>
             </p>
           </div>
         </div>
