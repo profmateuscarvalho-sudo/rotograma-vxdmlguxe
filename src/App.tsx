@@ -13,6 +13,7 @@ import Catalog from './pages/Catalog'
 import Settings from './pages/Settings'
 import NotFound from './pages/NotFound'
 import Login from './pages/Login'
+import Register from './pages/Register'
 
 const App = () => (
   <AppProvider>
@@ -22,6 +23,7 @@ const App = () => (
         <Sonner />
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/routes/new" element={<NewRoute />} />
