@@ -3,6 +3,8 @@ import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppProvider } from '@/store/AppContext'
+import { AuthProvider } from '@/hooks/use-auth'
+import { AuthGuard, PublicGuard } from '@/components/auth/guards'
 
 import Layout from './components/Layout'
 import Index from './pages/Index'
@@ -16,27 +18,35 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 
 const App = () => (
-  <AppProvider>
-    <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route element={<Layout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/routes/new" element={<NewRoute />} />
-            <Route path="/routes/:id/field" element={<FieldOperation />} />
-            <Route path="/routes/:id/report" element={<RouteReport />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
-    </BrowserRouter>
-  </AppProvider>
+  <AuthProvider>
+    <AppProvider>
+      <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route element={<PublicGuard />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
+
+            <Route element={<AuthGuard />}>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/routes/new" element={<NewRoute />} />
+                <Route path="/routes/:id/field" element={<FieldOperation />} />
+                <Route path="/routes/:id/report" element={<RouteReport />} />
+                <Route path="/catalog" element={<Catalog />} />
+                <Route path="/settings" element={<Settings />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </BrowserRouter>
+    </AppProvider>
+  </AuthProvider>
 )
 
 export default App
