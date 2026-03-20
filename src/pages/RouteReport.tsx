@@ -12,11 +12,13 @@ import {
   getRouteRiskLevel,
   getRouteRiskColor,
   getRouteRiskDescription,
+  getRiskWeightLevelName,
 } from '@/lib/risk-utils'
-import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera, Video, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, MapPin, Printer, Mic, FileText, Video, ShieldAlert } from 'lucide-react'
 import { IconRenderer } from '@/components/icons'
 import { RiskEvent, RiskType } from '@/types'
 import { cn } from '@/lib/utils'
+import { RiskLevelLegend } from '@/components/RiskLevelLegend'
 
 export default function RouteReport() {
   const { id } = useParams()
@@ -42,10 +44,10 @@ export default function RouteReport() {
     return acc + (risk ? risk.baseWeight : 0)
   }, 0)
 
-  const avgRouteLevelNum =
-    segments.length > 0 ? (totalRouteWeight / segments.length).toFixed(1) : '0.0'
+  const finalRouteScore = segments.length > 0 ? totalRouteWeight / segments.length : 0
+  const finalRouteScoreFormatted = finalRouteScore.toFixed(1)
 
-  const overallRouteLevel = getRouteRiskLevel(totalRouteWeight)
+  const overallRouteLevel = getRouteRiskLevel(finalRouteScore)
   const overallRouteLevelColor = getRouteRiskColor(overallRouteLevel)
 
   return (
@@ -108,48 +110,55 @@ export default function RouteReport() {
             <p className="text-2xl font-black text-slate-900">{segments.length}</p>
           </div>
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 print:border-slate-300">
-            <p className="text-sm text-slate-600 mb-1 font-semibold">Média por Trecho</p>
+            <p className="text-sm text-slate-600 mb-1 font-semibold">Soma dos Pesos</p>
             <p className="text-2xl font-black text-slate-900 mt-1">
-              {avgRouteLevelNum} <span className="text-sm font-normal text-slate-500">pts</span>
+              {totalRouteWeight} <span className="text-sm font-normal text-slate-500">pts</span>
             </p>
           </div>
         </div>
 
         {/* Prominent Severity Summary block for PDF and UI */}
-        <div
-          className={cn(
-            'p-6 md:p-8 rounded-xl border-2 flex flex-col md:flex-row items-center justify-between gap-6 mb-8 print:border-2 print:break-inside-avoid shadow-sm',
-            overallRouteLevelColor,
-          )}
-        >
-          <div className="flex items-start gap-4">
-            <div className="bg-white/20 p-3 rounded-xl shrink-0">
-              <ShieldAlert className="w-10 h-10 text-white" />
+        <div className="mb-8 print:break-inside-avoid">
+          <div
+            className={cn(
+              'p-6 md:p-8 rounded-xl border-2 flex flex-col md:flex-row items-center justify-between gap-6 print:border-2 shadow-sm',
+              overallRouteLevelColor,
+            )}
+          >
+            <div className="flex items-start gap-4">
+              <div className="bg-white/20 p-3 rounded-xl shrink-0">
+                <ShieldAlert className="w-10 h-10 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
+                  Resumo de Severidade
+                </h2>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl md:text-4xl font-black text-white">
+                    Nível de Risco: {overallRouteLevel}
+                  </span>
+                </div>
+                <p className="text-white/90 font-medium mt-2 max-w-xl leading-relaxed print:text-white print:opacity-100">
+                  {getRouteRiskDescription(overallRouteLevel)}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
-                Resumo de Severidade
-              </h2>
-              <div className="flex items-center gap-3">
-                <span className="text-3xl md:text-4xl font-black text-white">
-                  Nível de Risco: {overallRouteLevel}
+            <div className="bg-white/20 rounded-xl p-5 text-center min-w-[160px] border border-white/20 shrink-0 backdrop-blur-sm print:bg-white/30">
+              <p className="text-sm font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
+                Resultado Final
+              </p>
+              <div className="flex items-end justify-center gap-1">
+                <span className="text-5xl font-black text-white leading-none">
+                  {finalRouteScoreFormatted}
+                </span>
+                <span className="text-lg font-medium text-white/80 mb-1 print:text-white">
+                  pts/trecho
                 </span>
               </div>
-              <p className="text-white/90 font-medium mt-2 max-w-xl leading-relaxed print:text-white print:opacity-100">
-                {getRouteRiskDescription(overallRouteLevel)}
-              </p>
             </div>
           </div>
-          <div className="bg-white/20 rounded-xl p-5 text-center min-w-[160px] border border-white/20 shrink-0 backdrop-blur-sm print:bg-white/30">
-            <p className="text-sm font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
-              Pontuação Final
-            </p>
-            <div className="flex items-end justify-center gap-1">
-              <span className="text-5xl font-black text-white leading-none">
-                {totalRouteWeight}
-              </span>
-              <span className="text-lg font-medium text-white/80 mb-1 print:text-white">pts</span>
-            </div>
+          <div className="mt-4">
+            <RiskLevelLegend />
           </div>
         </div>
 
@@ -234,8 +243,13 @@ export default function RouteReport() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-3">
-                            <h4 className="font-bold text-lg text-slate-900">{risk.name}</h4>
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4 mb-3">
+                            <h4 className="font-bold text-lg text-slate-900 flex items-center gap-2 flex-wrap">
+                              {risk.name}
+                              <Badge className={getRiskWeightStyles(risk.baseWeight, true)}>
+                                {getRiskWeightLevelName(risk.baseWeight)} (Peso {risk.baseWeight})
+                              </Badge>
+                            </h4>
                             <div className="flex gap-2">
                               <Badge variant="secondary" className="bg-slate-100 text-slate-700">
                                 Ocorrências: {groupEvents.length}
@@ -281,19 +295,15 @@ export default function RouteReport() {
                                     {event.note}
                                   </p>
                                 )}
-                                <div className="mt-auto h-32 w-full bg-slate-100 rounded-md overflow-hidden border border-slate-200 print:h-40 print:border-slate-300 flex items-center justify-center">
-                                  {event.photoUrl ? (
+                                {event.photoUrl && (
+                                  <div className="mt-4 h-32 w-full bg-slate-100 rounded-md overflow-hidden border border-slate-200 print:h-40 print:border-slate-300 flex items-center justify-center shrink-0">
                                     <img
                                       src={event.photoUrl}
                                       alt="Evidência fotográfica"
                                       className="object-cover w-full h-full"
                                     />
-                                  ) : (
-                                    <span className="text-slate-400 text-sm flex items-center gap-2">
-                                      <Camera className="w-4 h-4" /> Sem registro fotográfico
-                                    </span>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

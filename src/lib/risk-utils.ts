@@ -100,19 +100,34 @@ export const getRiskWeightStyles = (weight: number, active: boolean) => {
         : 'bg-green-50 border-green-200 text-green-700'
     case 2:
       return active
-        ? 'bg-blue-500 border-blue-600 text-white'
-        : 'bg-blue-50 border-blue-200 text-blue-700'
-    case 3:
-      return active
         ? 'bg-yellow-500 border-yellow-600 text-white'
         : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+    case 3:
+      return active
+        ? 'bg-orange-500 border-orange-600 text-white'
+        : 'bg-orange-50 border-orange-200 text-orange-700'
     case 4:
       return active
-        ? 'bg-red-500 border-red-600 text-white'
+        ? 'bg-red-600 border-red-700 text-white'
         : 'bg-red-50 border-red-200 text-red-700'
     default:
       return active
         ? 'bg-slate-500 border-slate-600 text-white'
         : 'bg-slate-50 border-slate-200 text-slate-700'
+  }
+}
+
+export const getRiskWeightLevelName = (weight: number): string => {
+  switch (weight) {
+    case 1:
+      return 'Nível 1 - Baixo'
+    case 2:
+      return 'Nível 2 - Médio'
+    case 3:
+      return 'Nível 3 - Alto'
+    case 4:
+      return 'Nível 4 - Crítico'
+    default:
+      return 'Desconhecido'
   }
 }

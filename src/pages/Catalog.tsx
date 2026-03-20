@@ -17,7 +17,8 @@ import { RiskType } from '@/types'
 import { useToast } from '@/hooks/use-toast'
 import { RiskFormDialog } from '@/components/catalog/RiskFormDialog'
 import { DeleteRiskDialog } from '@/components/catalog/DeleteRiskDialog'
-import { getRiskWeightStyles } from '@/lib/risk-utils'
+import { getRiskWeightStyles, getRiskWeightLevelName } from '@/lib/risk-utils'
+import { RiskLevelLegend } from '@/components/RiskLevelLegend'
 
 export default function Catalog() {
   const { state, addCatalogRisk, updateCatalogRisk, removeCatalogRisk } = useAppStore()
@@ -66,6 +67,8 @@ export default function Catalog() {
         </Button>
       </div>
 
+      <RiskLevelLegend />
+
       <Card>
         <CardHeader>
           <CardTitle>Riscos Disponíveis</CardTitle>
@@ -76,7 +79,7 @@ export default function Catalog() {
               <TableRow>
                 <TableHead>Risco</TableHead>
                 <TableHead className="hidden md:table-cell">Categoria</TableHead>
-                <TableHead className="text-center">Peso</TableHead>
+                <TableHead className="text-center">Peso / Nível</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -106,12 +109,17 @@ export default function Catalog() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className={`font-bold px-3 py-1 ${getRiskWeightStyles(risk.baseWeight, true)}`}
-                    >
-                      Peso {risk.baseWeight}
-                    </Badge>
+                    <div className="flex flex-col items-center gap-1">
+                      <Badge
+                        variant="outline"
+                        className={`font-bold px-3 py-1 ${getRiskWeightStyles(risk.baseWeight, true)}`}
+                      >
+                        Peso {risk.baseWeight}
+                      </Badge>
+                      <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">
+                        {getRiskWeightLevelName(risk.baseWeight)}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
