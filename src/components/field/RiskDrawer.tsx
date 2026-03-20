@@ -53,8 +53,11 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
         recorder.ondataavailable = (e) => chunks.push(e.data)
         recorder.onstop = () => {
           const blob = new Blob(chunks, { type: 'audio/webm' })
-          const url = URL.createObjectURL(blob)
-          setAudioUrl(url)
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            setAudioUrl(reader.result as string)
+          }
+          reader.readAsDataURL(blob)
           stream.getTracks().forEach((t) => t.stop())
         }
         recorder.start()
@@ -64,14 +67,9 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
         console.error(err)
         toast({
           title: 'Microfone indisponível',
-          description: 'Simulando gravação de áudio...',
+          description: 'Não foi possível acessar o microfone.',
           duration: 2000,
         })
-        setIsRecording(true)
-        setTimeout(() => {
-          setIsRecording(false)
-          setAudioUrl('simulated_audio.webm')
-        }, 2000)
       }
     }
   }
@@ -79,8 +77,11 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const url = URL.createObjectURL(file)
-      setPhotoUrl(url)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPhotoUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 

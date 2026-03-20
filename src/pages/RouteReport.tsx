@@ -38,7 +38,8 @@ export default function RouteReport() {
     return acc + (risk ? risk.baseWeight : 0)
   }, 0)
 
-  const avgRouteWeight = events.length > 0 ? (totalRouteWeight / events.length).toFixed(1) : '0.0'
+  const avgRouteLevelNum =
+    segments.length > 0 ? (totalRouteWeight / segments.length).toFixed(1) : '0.0'
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-10 print:w-full print:max-w-none print:m-0 print:p-0 print:space-y-4">
@@ -112,7 +113,7 @@ export default function RouteReport() {
               Média de Nível de Risco
             </p>
             <p className="text-2xl font-black text-amber-900 print:text-slate-900">
-              {avgRouteWeight} <span className="text-sm font-normal">pts/evento</span>
+              {avgRouteLevelNum} <span className="text-sm font-normal">pts/trecho</span>
             </p>
           </div>
         </div>
@@ -171,7 +172,7 @@ export default function RouteReport() {
                   </span>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-slate-600">
-                      Nível do Trecho: {seg.score} pts
+                      Nível de Risco por Trecho: {seg.score} pts
                     </span>
                     <span className="text-sm font-medium text-slate-500">
                       {segEvents.length} eventos
@@ -198,20 +199,22 @@ export default function RouteReport() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
+                          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-3">
                             <h4 className="font-bold text-lg text-slate-900">{risk.name}</h4>
-                            <Badge
-                              variant="outline"
-                              className={`border ${getRiskWeightStyles(risk.baseWeight, false)} bg-transparent border-current`}
-                            >
-                              Peso Total: {groupWeightSum}
-                            </Badge>
+                            <div className="flex gap-2">
+                              <Badge variant="secondary" className="bg-slate-100 text-slate-700">
+                                Ocorrências: {groupEvents.length}
+                              </Badge>
+                              <Badge
+                                variant="outline"
+                                className={`border ${getRiskWeightStyles(risk.baseWeight, false)} bg-transparent border-current`}
+                              >
+                                Peso Total: {groupWeightSum}
+                              </Badge>
+                            </div>
                           </div>
-                          <p className="text-sm font-semibold text-slate-500 mb-3">
-                            Registrado {groupEvents.length} vezes
-                          </p>
 
-                          <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {groupEvents.map((event) => (
                               <div
                                 key={event.id}
@@ -231,25 +234,19 @@ export default function RouteReport() {
                                   )}
                                 </div>
                                 {event.note && (
-                                  <p className="text-sm text-slate-700 mb-3">{event.note}</p>
+                                  <p className="text-sm text-slate-700 leading-relaxed">
+                                    {event.note}
+                                  </p>
                                 )}
-                                <div className="flex flex-wrap gap-3">
-                                  {event.photoUrl ? (
-                                    <div className="h-24 w-32 bg-slate-200 rounded-md overflow-hidden border border-slate-300">
-                                      <img
-                                        src={event.photoUrl}
-                                        alt="Evidência"
-                                        className="object-cover w-full h-full"
-                                      />
-                                    </div>
-                                  ) : (
-                                    <div className="h-24 w-32 bg-transparent border-2 border-dashed border-slate-200 rounded-md flex items-center justify-center">
-                                      <span className="text-xs text-slate-400 font-medium opacity-50">
-                                        Sem foto
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
+                                {event.photoUrl && (
+                                  <div className="mt-3 h-32 w-full bg-slate-200 rounded-md overflow-hidden border border-slate-300 print:h-40 print:border-slate-800">
+                                    <img
+                                      src={event.photoUrl}
+                                      alt="Evidência fotográfica"
+                                      className="object-cover w-full h-full"
+                                    />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

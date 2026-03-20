@@ -106,19 +106,21 @@ export default function FieldOperation() {
         recorder.ondataavailable = (e) => chunks.push(e.data)
         recorder.onstop = () => {
           const blob = new Blob(chunks, { type: 'audio/webm' })
-          setObsAudioUrl(URL.createObjectURL(blob))
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            setObsAudioUrl(reader.result as string)
+          }
+          reader.readAsDataURL(blob)
           stream.getTracks().forEach((t) => t.stop())
         }
         recorder.start()
         obsMediaRecorderRef.current = recorder
         setIsRecordingObs(true)
       } catch (err) {
-        toast({ title: 'Microfone indisponível', description: 'Simulando gravação...' })
-        setIsRecordingObs(true)
-        setTimeout(() => {
-          setIsRecordingObs(false)
-          setObsAudioUrl('simulated_audio.webm')
-        }, 2000)
+        toast({
+          title: 'Microfone indisponível',
+          description: 'Não foi possível acessar o microfone.',
+        })
       }
     }
   }
@@ -148,7 +150,12 @@ export default function FieldOperation() {
     >
       <div className="bg-white px-4 py-4 shadow-sm z-10 sticky top-0">
         <div className="flex items-center gap-4 mb-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="-ml-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="-ml-3 font-semibold text-slate-600"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" /> Voltar para o Menu
           </Button>
         </div>
@@ -168,14 +175,15 @@ export default function FieldOperation() {
               size="lg"
               onClick={handlePrevSegment}
               disabled={currentSegmentIndex === 0}
-              className="h-14 px-4 rounded-xl shadow-sm"
+              className="h-14 px-4 rounded-xl shadow-sm font-semibold text-slate-700"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 md:mr-1" />
+              <span className="hidden md:inline">Anterior</span>
             </Button>
             <Button
               onClick={handleNextSegment}
               size="lg"
-              className="h-14 px-6 rounded-xl shadow-md"
+              className="h-14 px-6 rounded-xl shadow-md font-semibold"
             >
               {isLastSegment ? (
                 <>
@@ -183,7 +191,8 @@ export default function FieldOperation() {
                 </>
               ) : (
                 <>
-                  <ChevronRight className="mr-2" /> Próximo
+                  <ChevronRight className="md:mr-2" />
+                  <span className="hidden md:inline">Próximo</span>
                 </>
               )}
             </Button>
@@ -221,7 +230,7 @@ export default function FieldOperation() {
           <div className="flex gap-2">
             <Button
               variant={isRecordingObs ? 'destructive' : 'secondary'}
-              className="flex-1"
+              className="flex-1 font-semibold"
               onClick={handleToggleObsAudio}
             >
               {isRecordingObs ? (
@@ -233,7 +242,7 @@ export default function FieldOperation() {
             </Button>
             <Button
               onClick={handleRegisterObservation}
-              className="flex-1"
+              className="flex-1 font-semibold"
               disabled={!segmentObservation.trim() && !obsAudioUrl}
             >
               Registrar

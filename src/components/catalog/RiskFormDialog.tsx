@@ -87,6 +87,7 @@ const ICONS = [
   'ThumbsDown',
   'XCircle',
   'MinusCircle',
+  'Minus',
   'HelpCircle',
   'Info',
   'MessageCircleWarning',
@@ -102,6 +103,9 @@ const ICONS = [
   'Bus',
   'Plane',
   'Ship',
+  'Shuffle',
+  'Building',
+  'User',
 ]
 
 const riskSchema = z.object({
