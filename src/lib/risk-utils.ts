@@ -24,11 +24,25 @@ export const getRiskLevel = (score: number): RiskLevel => {
 }
 
 export const getRouteRiskLevel = (score: number): RouteRiskLevel => {
-  if (score === 0) return 'Sem Riscos'
   if (score <= ROUTE_LEVEL_THRESHOLDS.BAIXO) return 'Baixo'
   if (score <= ROUTE_LEVEL_THRESHOLDS.MEDIO) return 'Médio'
   if (score <= ROUTE_LEVEL_THRESHOLDS.ALTO) return 'Alto'
   return 'Crítico'
+}
+
+export const getRouteRiskDescription = (level: RouteRiskLevel): string => {
+  switch (level) {
+    case 'Baixo':
+      return 'Risco aceitável (Nível 1). Probabilidade muito baixa de acidentes graves. As condições gerais da via são adequadas para o tráfego regular.'
+    case 'Médio':
+      return 'Atenção requerida (Nível 2). Presença de fatores de risco moderados que demandam condução defensiva e observação atenta do motorista.'
+    case 'Alto':
+      return 'Risco considerável (Nível 3). Condições adversas na via ou entorno que exigem alto nível de alerta e possíveis medidas de mitigação.'
+    case 'Crítico':
+      return 'Severidade máxima (Nível 4). Múltiplos fatores de risco severos ou perigos iminentes detectados no trajeto. Intervenção ou revisão de rota fortemente recomendada.'
+    default:
+      return 'Nível não classificado.'
+  }
 }
 
 export const getRouteRiskColor = (level: RouteRiskLevel): string => {

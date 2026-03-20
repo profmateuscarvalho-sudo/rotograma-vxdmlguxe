@@ -6,6 +6,7 @@ import { RiskDrawer } from '@/components/field/RiskDrawer'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import {
   ChevronRight,
   ChevronLeft,
@@ -18,6 +19,8 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { RiskType, RiskEvent } from '@/types'
+import { getRouteRiskLevel, getRouteRiskColor } from '@/lib/risk-utils'
+import { cn } from '@/lib/utils'
 
 export default function FieldOperation() {
   const { id } = useParams()
@@ -44,6 +47,17 @@ export default function FieldOperation() {
   const currentEvents = state.events.filter((e) => e.segmentId === currentSegment?.id)
   const segmentObservations =
     state.observations?.filter((o) => o.segmentId === currentSegment?.id) || []
+
+  // Dynamic Route Total Score Calculation
+  const totalRouteScore = state.events
+    .filter((e) => e.routeId === id)
+    .reduce((acc, e) => {
+      const risk = state.catalog.find((r) => r.id === e.riskTypeId)
+      return acc + (risk ? risk.baseWeight : 0)
+    }, 0)
+
+  const routeLevel = getRouteRiskLevel(totalRouteScore)
+  const routeLevelColor = getRouteRiskColor(routeLevel)
 
   useEffect(() => {
     if (!route) navigate('/')
@@ -224,7 +238,7 @@ export default function FieldOperation() {
         <Progress value={progress} className="h-3 rounded-full" />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 pb-12 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 pb-12">
         <Button
           variant="default"
           className="w-full h-14 text-base bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md rounded-xl transition-all active:scale-[0.98]"
@@ -233,6 +247,32 @@ export default function FieldOperation() {
           <Video className="w-5 h-5 mr-2" />
           Ver no Vídeo (Marcar Tempo Geral)
         </Button>
+
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-row items-center justify-between mt-6 mb-6">
+          <div>
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Soma de Pesos (Total da Rota)
+            </h3>
+            <div className="flex items-end gap-1">
+              <span className="text-3xl font-black text-slate-900 leading-none">
+                {totalRouteScore}
+              </span>
+              <span className="text-sm font-medium text-slate-500 mb-1">pts</span>
+            </div>
+          </div>
+          <div className="text-right flex flex-col items-end">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Nível de Risco
+            </h3>
+            <Badge
+              variant="outline"
+              className={cn('text-sm px-3 py-1 font-bold border-transparent', routeLevelColor)}
+            >
+              {routeLevel}
+            </Badge>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {state.catalog.map((risk) => {
             const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
@@ -285,7 +325,7 @@ export default function FieldOperation() {
         </div>
 
         {segmentObservations.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2 mt-6">
             <h3 className="text-sm font-semibold text-slate-600 mb-2">Registros do Trecho:</h3>
             {segmentObservations.map((obs) => (
               <div

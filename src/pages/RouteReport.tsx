@@ -11,10 +11,12 @@ import {
   getRiskWeightStyles,
   getRouteRiskLevel,
   getRouteRiskColor,
+  getRouteRiskDescription,
 } from '@/lib/risk-utils'
-import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera, Video } from 'lucide-react'
+import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera, Video, ShieldAlert } from 'lucide-react'
 import { IconRenderer } from '@/components/icons'
 import { RiskEvent, RiskType } from '@/types'
+import { cn } from '@/lib/utils'
 
 export default function RouteReport() {
   const { id } = useParams()
@@ -96,7 +98,7 @@ export default function RouteReport() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 print:grid-cols-4 print:gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 print:grid-cols-3 print:gap-2">
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 print:border-slate-300">
             <p className="text-sm text-slate-500 mb-1">Total de Eventos</p>
             <p className="text-2xl font-black text-slate-900">{events.length}</p>
@@ -106,21 +108,48 @@ export default function RouteReport() {
             <p className="text-2xl font-black text-slate-900">{segments.length}</p>
           </div>
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 print:border-slate-300">
-            <p className="text-sm text-slate-600 mb-1 font-semibold">Risco Global da Rota</p>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
-              <span className="text-2xl font-black text-slate-900 leading-none">
-                {totalRouteWeight} <span className="text-sm font-normal text-slate-500">pts</span>
-              </span>
-              <Badge variant="outline" className={`${overallRouteLevelColor} mt-1 sm:mt-0`}>
-                Nível: {overallRouteLevel}
-              </Badge>
-            </div>
-          </div>
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 print:border-slate-300">
             <p className="text-sm text-slate-600 mb-1 font-semibold">Média por Trecho</p>
             <p className="text-2xl font-black text-slate-900 mt-1">
               {avgRouteLevelNum} <span className="text-sm font-normal text-slate-500">pts</span>
             </p>
+          </div>
+        </div>
+
+        {/* Prominent Severity Summary block for PDF and UI */}
+        <div
+          className={cn(
+            'p-6 md:p-8 rounded-xl border-2 flex flex-col md:flex-row items-center justify-between gap-6 mb-8 print:border-2 print:break-inside-avoid shadow-sm',
+            overallRouteLevelColor,
+          )}
+        >
+          <div className="flex items-start gap-4">
+            <div className="bg-white/20 p-3 rounded-xl shrink-0">
+              <ShieldAlert className="w-10 h-10 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
+                Resumo de Severidade
+              </h2>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl md:text-4xl font-black text-white">
+                  Nível de Risco: {overallRouteLevel}
+                </span>
+              </div>
+              <p className="text-white/90 font-medium mt-2 max-w-xl leading-relaxed print:text-white print:opacity-100">
+                {getRouteRiskDescription(overallRouteLevel)}
+              </p>
+            </div>
+          </div>
+          <div className="bg-white/20 rounded-xl p-5 text-center min-w-[160px] border border-white/20 shrink-0 backdrop-blur-sm print:bg-white/30">
+            <p className="text-sm font-bold text-white/90 uppercase tracking-wider mb-1 print:text-white">
+              Pontuação Final
+            </p>
+            <div className="flex items-end justify-center gap-1">
+              <span className="text-5xl font-black text-white leading-none">
+                {totalRouteWeight}
+              </span>
+              <span className="text-lg font-medium text-white/80 mb-1 print:text-white">pts</span>
+            </div>
           </div>
         </div>
 
