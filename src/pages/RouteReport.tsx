@@ -10,7 +10,7 @@ import {
   getRiskColorHex,
   getRiskWeightStyles,
 } from '@/lib/risk-utils'
-import { ArrowLeft, MapPin, Printer, Mic, FileText } from 'lucide-react'
+import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera } from 'lucide-react'
 import { IconRenderer } from '@/components/icons'
 import { RiskEvent, RiskType } from '@/types'
 
@@ -218,7 +218,7 @@ export default function RouteReport() {
                             {groupEvents.map((event) => (
                               <div
                                 key={event.id}
-                                className="bg-slate-50 rounded-md p-3 border border-slate-100 print:border-slate-200"
+                                className="bg-slate-50 rounded-md p-3 border border-slate-100 print:border-slate-200 flex flex-col"
                               >
                                 <div className="flex justify-between items-center mb-2">
                                   <span className="text-xs font-bold font-mono text-slate-500">
@@ -234,19 +234,23 @@ export default function RouteReport() {
                                   )}
                                 </div>
                                 {event.note && (
-                                  <p className="text-sm text-slate-700 leading-relaxed">
+                                  <p className="text-sm text-slate-700 leading-relaxed mb-2 flex-1">
                                     {event.note}
                                   </p>
                                 )}
-                                {event.photoUrl && (
-                                  <div className="mt-3 h-32 w-full bg-slate-200 rounded-md overflow-hidden border border-slate-300 print:h-40 print:border-slate-800">
+                                <div className="mt-auto h-32 w-full bg-slate-100 rounded-md overflow-hidden border border-slate-200 print:h-40 print:border-slate-300 flex items-center justify-center">
+                                  {event.photoUrl ? (
                                     <img
                                       src={event.photoUrl}
                                       alt="Evidência fotográfica"
                                       className="object-cover w-full h-full"
                                     />
-                                  </div>
-                                )}
+                                  ) : (
+                                    <span className="text-slate-400 text-sm flex items-center gap-2">
+                                      <Camera className="w-4 h-4" /> Sem registro fotográfico
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             ))}
                           </div>
