@@ -127,7 +127,10 @@ export default function Index() {
                 (total, event) => total + calculateEventScore(event, catalog),
                 0,
               )
-              const routeRiskLevel = getRouteRiskLevel(routeScore)
+              const routeSegments = segments.filter((s) => s.routeId === route.id)
+              const segmentCount = Math.max(routeSegments.length, 1)
+              const avgRouteScore = routeScore / segmentCount
+              const routeRiskLevel = getRouteRiskLevel(avgRouteScore)
 
               return (
                 <Card
@@ -161,9 +164,9 @@ export default function Index() {
                       <Badge
                         variant="outline"
                         className={getRouteRiskColor(routeRiskLevel)}
-                        title={`Peso total: ${routeScore}`}
+                        title={`Média: ${avgRouteScore.toFixed(1)} pts/trecho`}
                       >
-                        Nível: {routeRiskLevel} ({routeScore} pts)
+                        Nível: {routeRiskLevel} ({avgRouteScore.toFixed(1)} pts/méd)
                       </Badge>
 
                       <div className="flex items-center gap-2">

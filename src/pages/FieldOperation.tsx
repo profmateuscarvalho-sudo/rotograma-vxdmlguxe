@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { RiskType, RiskEvent } from '@/types'
-import { getRouteRiskLevel, getRouteRiskColor } from '@/lib/risk-utils'
+import { getRiskLevel, getRiskColor } from '@/lib/risk-utils'
 import { cn } from '@/lib/utils'
 
 export default function FieldOperation() {
@@ -48,16 +48,14 @@ export default function FieldOperation() {
   const segmentObservations =
     state.observations?.filter((o) => o.segmentId === currentSegment?.id) || []
 
-  // Dynamic Route Total Score Calculation
-  const totalRouteScore = state.events
-    .filter((e) => e.routeId === id)
-    .reduce((acc, e) => {
-      const risk = state.catalog.find((r) => r.id === e.riskTypeId)
-      return acc + (risk ? risk.baseWeight : 0)
-    }, 0)
+  // Dynamic Segment Total Score Calculation (Only for the current stretch)
+  const currentSegmentScore = currentEvents.reduce((acc, e) => {
+    const risk = state.catalog.find((r) => r.id === e.riskTypeId)
+    return acc + (risk ? risk.baseWeight : 0)
+  }, 0)
 
-  const routeLevel = getRouteRiskLevel(totalRouteScore)
-  const routeLevelColor = getRouteRiskColor(routeLevel)
+  const segmentLevel = getRiskLevel(currentSegmentScore)
+  const segmentLevelColor = getRiskColor(segmentLevel)
 
   useEffect(() => {
     if (!route) navigate('/')
@@ -251,11 +249,11 @@ export default function FieldOperation() {
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-row items-center justify-between mt-6 mb-6">
           <div>
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Soma de Pesos (Total da Rota)
+              Pontuação do Trecho Atual
             </h3>
             <div className="flex items-end gap-1">
               <span className="text-3xl font-black text-slate-900 leading-none">
-                {totalRouteScore}
+                {currentSegmentScore}
               </span>
               <span className="text-sm font-medium text-slate-500 mb-1">pts</span>
             </div>
@@ -266,9 +264,9 @@ export default function FieldOperation() {
             </h3>
             <Badge
               variant="outline"
-              className={cn('text-sm px-3 py-1 font-bold border-transparent', routeLevelColor)}
+              className={cn('text-sm px-3 py-1 font-bold border-transparent', segmentLevelColor)}
             >
-              {routeLevel}
+              {segmentLevel}
             </Badge>
           </div>
         </div>
