@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-20T01:20:11.646Z",
+  "generatedAt": "2026-03-20T01:35:55.183Z",
   "collections": [
     {
       "name": "users",
@@ -243,6 +243,12 @@
           "type": "file",
           "required": false,
           "system": false
+        },
+        {
+          "name": "video_timestamp",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []
@@ -290,6 +296,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "video_timestamp",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []

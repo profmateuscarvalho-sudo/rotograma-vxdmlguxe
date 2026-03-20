@@ -48,6 +48,7 @@ export interface Observation {
   segmentId: string
   note: string
   audioUrl?: string
+  videoTimestamp?: string
   timestamp: number
   synced: boolean
 }

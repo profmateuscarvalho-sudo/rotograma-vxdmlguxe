@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
-import { Camera, Mic, Square } from 'lucide-react'
+import { Camera, Mic, Square, Video } from 'lucide-react'
 import { useAppStore } from '@/store/AppContext'
 import { toast } from '@/hooks/use-toast'
 
@@ -25,6 +25,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const [note, setNote] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
   const [photoUrl, setPhotoUrl] = useState('')
+  const [videoTimestamp, setVideoTimestamp] = useState('')
   const [timestamp, setTimestamp] = useState<number>(Date.now())
 
   const [isRecording, setIsRecording] = useState(false)
@@ -37,6 +38,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
       setNote(event?.note || '')
       setAudioUrl(event?.audioUrl || '')
       setPhotoUrl(event?.photoUrl || '')
+      setVideoTimestamp(event?.videoTimestamp || '')
       setTimestamp(event?.timestamp || Date.now())
     }
   }, [eventId, state.events])
@@ -87,7 +89,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
 
   const handleSave = () => {
     if (eventId) {
-      updateEvent(eventId, { note, audioUrl, timestamp, photoUrl })
+      updateEvent(eventId, { note, audioUrl, timestamp, photoUrl, videoTimestamp })
       toast({ title: 'Detalhes salvos', duration: 2000 })
     }
     onClose()
@@ -111,6 +113,28 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
                 disabled
                 className="bg-slate-50 text-slate-600"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Sincronização de Vídeo</label>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 bg-slate-50"
+                  onClick={() => {
+                    setVideoTimestamp(new Date().toISOString())
+                    toast({ title: 'Marcador de vídeo registrado!', duration: 2000 })
+                  }}
+                >
+                  <Video className="w-4 h-4 mr-2 text-slate-600" />
+                  {videoTimestamp ? 'Atualizar Marcador' : 'Ver no Vídeo'}
+                </Button>
+                {videoTimestamp && (
+                  <span className="text-xs font-mono font-medium text-slate-500 whitespace-nowrap px-2">
+                    {new Date(videoTimestamp).toLocaleTimeString('pt-BR')}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">

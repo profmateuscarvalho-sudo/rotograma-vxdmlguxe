@@ -10,7 +10,7 @@ import {
   getRiskColorHex,
   getRiskWeightStyles,
 } from '@/lib/risk-utils'
-import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera } from 'lucide-react'
+import { ArrowLeft, MapPin, Printer, Mic, FileText, Camera, Video } from 'lucide-react'
 import { IconRenderer } from '@/components/icons'
 import { RiskEvent, RiskType } from '@/types'
 
@@ -227,11 +227,19 @@ export default function RouteReport() {
                                       minute: '2-digit',
                                     })}
                                   </span>
-                                  {event.audioUrl && (
-                                    <div className="flex items-center gap-1 text-xs font-medium text-blue-600 print:text-slate-500">
-                                      <Mic className="w-3 h-3" /> Áudio
-                                    </div>
-                                  )}
+                                  <div className="flex items-center gap-2">
+                                    {event.videoTimestamp && (
+                                      <div className="flex items-center gap-1 text-xs font-medium text-slate-700 bg-slate-200 px-2 py-0.5 rounded-full print:bg-slate-100 print:border print:border-slate-300">
+                                        <Video className="w-3 h-3" /> Vídeo:{' '}
+                                        {new Date(event.videoTimestamp).toLocaleTimeString('pt-BR')}
+                                      </div>
+                                    )}
+                                    {event.audioUrl && (
+                                      <div className="flex items-center gap-1 text-xs font-medium text-blue-600 print:text-slate-500">
+                                        <Mic className="w-3 h-3" /> Áudio
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                                 {event.note && (
                                   <p className="text-sm text-slate-700 leading-relaxed mb-2 flex-1">
@@ -262,7 +270,7 @@ export default function RouteReport() {
                   {segObservations.length > 0 && (
                     <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100 print:bg-slate-100 print:border-slate-300">
                       <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-3 print:text-slate-800">
-                        <FileText className="w-4 h-4" /> Observações do Trecho
+                        <FileText className="w-4 h-4" /> Observações e Marcadores do Trecho
                       </h4>
                       <div className="space-y-3">
                         {segObservations.map((obs) => (
@@ -274,6 +282,12 @@ export default function RouteReport() {
                                   minute: '2-digit',
                                 })}
                               </span>
+                              {obs.videoTimestamp && (
+                                <span className="inline-flex items-center gap-1 text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full print:bg-white print:border print:border-slate-300">
+                                  <Video className="w-3 h-3" /> Vídeo:{' '}
+                                  {new Date(obs.videoTimestamp).toLocaleTimeString('pt-BR')}
+                                </span>
+                              )}
                               {obs.audioUrl && (
                                 <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full print:bg-slate-200 print:text-slate-600">
                                   <Mic className="w-3 h-3" /> Áudio anexado
@@ -281,7 +295,9 @@ export default function RouteReport() {
                               )}
                             </div>
                             {obs.note && (
-                              <span className="text-slate-700 leading-relaxed">{obs.note}</span>
+                              <span className="text-slate-700 leading-relaxed font-medium">
+                                {obs.note}
+                              </span>
                             )}
                           </div>
                         ))}

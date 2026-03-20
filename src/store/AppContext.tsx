@@ -135,6 +135,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (routeRecord) {
           formData.append('route_id', routeRecord.id)
           formData.append('note', observation.note)
+          if (observation.videoTimestamp) {
+            formData.append('video_timestamp', observation.videoTimestamp)
+          }
           if (observation.audioUrl && observation.audioUrl.startsWith('blob:')) {
             const response = await fetch(observation.audioUrl)
             const blob = await response.blob()

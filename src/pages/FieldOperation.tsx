@@ -6,7 +6,16 @@ import { RiskDrawer } from '@/components/field/RiskDrawer'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { ChevronRight, ChevronLeft, Flag, ArrowLeft, Mic, Square, FileText } from 'lucide-react'
+import {
+  ChevronRight,
+  ChevronLeft,
+  Flag,
+  ArrowLeft,
+  Mic,
+  Square,
+  FileText,
+  Video,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { RiskType, RiskEvent } from '@/types'
 
@@ -92,6 +101,20 @@ export default function FieldOperation() {
       completeRoute(id!)
       navigate(`/routes/${id}/report`)
     }
+  }
+
+  const handleVideoMarker = () => {
+    if (navigator.vibrate) navigator.vibrate(50)
+    addObservation({
+      id: crypto.randomUUID(),
+      routeId: id!,
+      segmentId: currentSegment.id,
+      note: 'Marcador de Vídeo',
+      videoTimestamp: new Date().toISOString(),
+      timestamp: Date.now(),
+      synced: false,
+    })
+    toast({ title: 'Marcador de vídeo registrado', duration: 3000 })
   }
 
   const handleToggleObsAudio = async () => {
@@ -202,6 +225,14 @@ export default function FieldOperation() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 pb-12 space-y-6">
+        <Button
+          variant="default"
+          className="w-full h-14 text-base bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md rounded-xl transition-all active:scale-[0.98]"
+          onClick={handleVideoMarker}
+        >
+          <Video className="w-5 h-5 mr-2" />
+          Ver no Vídeo (Marcar Tempo Geral)
+        </Button>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {state.catalog.map((risk) => {
             const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
@@ -255,16 +286,23 @@ export default function FieldOperation() {
 
         {segmentObservations.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-slate-600 mb-2">Registros de Observação:</h3>
+            <h3 className="text-sm font-semibold text-slate-600 mb-2">Registros do Trecho:</h3>
             {segmentObservations.map((obs) => (
               <div
                 key={obs.id}
-                className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm"
+                className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm"
               >
-                <div className="text-xs text-slate-500 mb-1 font-mono">
-                  {new Date(obs.timestamp).toLocaleString('pt-BR')}
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs text-slate-500 font-mono">
+                    {new Date(obs.timestamp).toLocaleTimeString('pt-BR')}
+                  </span>
+                  {obs.videoTimestamp && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 bg-slate-200 px-2 py-0.5 rounded-full">
+                      <Video className="w-3 h-3" /> Marcador de Vídeo
+                    </span>
+                  )}
                 </div>
-                {obs.note && <p className="text-slate-700">{obs.note}</p>}
+                {obs.note && <p className="text-slate-700 font-medium">{obs.note}</p>}
                 {obs.audioUrl && <audio controls src={obs.audioUrl} className="w-full h-8 mt-2" />}
               </div>
             ))}
