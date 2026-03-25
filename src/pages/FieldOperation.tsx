@@ -83,15 +83,24 @@ export default function FieldOperation() {
 
     toast({
       title: `${risk.name} registrado`,
-      duration: 5000,
-      action: (
-        <Button variant="outline" size="sm" onClick={() => removeEvent(eventId)}>
-          Desfazer
-        </Button>
-      ),
+      duration: 1500,
     })
 
     return eventId
+  }
+
+  const handleRemoveRisk = (risk: RiskType) => {
+    const eventsOfType = currentEvents.filter((e) => e.riskTypeId === risk.id)
+    if (eventsOfType.length > 0) {
+      // Find the most recently added event of this specific risk type
+      const lastEvent = eventsOfType.sort((a, b) => b.timestamp - a.timestamp)[0]
+      removeEvent(lastEvent.id)
+      if (navigator.vibrate) navigator.vibrate([30, 30])
+      toast({
+        title: `${risk.name} removido`,
+        duration: 1500,
+      })
+    }
   }
 
   const handleLongPress = (risk: RiskType) => {
@@ -183,95 +192,91 @@ export default function FieldOperation() {
     <div
       className={`flex flex-col h-screen transition-colors duration-200 ${flash ? 'bg-blue-100' : 'bg-slate-100'}`}
     >
-      <div className="bg-white px-4 py-4 shadow-sm z-10 sticky top-0">
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="-ml-3 font-semibold text-slate-600"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Voltar para o Menu
-          </Button>
-        </div>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900">
-              Trecho {currentSegment.number}{' '}
-              <span className="text-xl text-slate-400 font-medium">/ {segments.length}</span>
+      <div className="bg-white px-3 py-3 shadow-sm z-10 sticky top-0">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="-ml-2 h-8 font-semibold text-slate-600 px-2 mb-1 self-start"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
+            </Button>
+            <h1 className="text-xl font-black tracking-tight text-slate-900 flex items-baseline gap-2">
+              Trecho {currentSegment.number}
+              <span className="text-sm text-slate-400 font-medium">/ {segments.length}</span>
             </h1>
-            <p className="text-sm font-medium text-slate-500 mt-1">
+            <p className="text-xs font-medium text-slate-500">
               KM {currentSegment.startKm} ao KM {currentSegment.endKm}
             </p>
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
-              size="lg"
+              size="icon"
               onClick={handlePrevSegment}
               disabled={currentSegmentIndex === 0}
-              className="h-14 px-4 rounded-xl shadow-sm font-semibold text-slate-700"
+              className="h-10 w-10 rounded-xl shadow-sm text-slate-700 shrink-0"
             >
-              <ChevronLeft className="w-5 h-5 md:mr-1" />
-              <span className="hidden md:inline">Anterior</span>
+              <ChevronLeft className="w-5 h-5" />
             </Button>
             <Button
               onClick={handleNextSegment}
-              size="lg"
-              className="h-14 px-6 rounded-xl shadow-md font-semibold"
+              size="sm"
+              className="h-10 px-4 rounded-xl shadow-md font-semibold shrink-0"
             >
               {isLastSegment ? (
                 <>
-                  <Flag className="mr-2" /> Finalizar
+                  <Flag className="w-4 h-4 mr-1" /> Fim
                 </>
               ) : (
                 <>
-                  <ChevronRight className="md:mr-2" />
-                  <span className="hidden md:inline">Próximo</span>
+                  <ChevronRight className="w-5 h-5" />
                 </>
               )}
             </Button>
           </div>
         </div>
-        <Progress value={progress} className="h-3 rounded-full" />
+        <Progress value={progress} className="h-2 rounded-full" />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 pb-12">
+      <div className="flex-1 overflow-y-auto p-3 pb-12">
         <Button
           variant="default"
-          className="w-full h-14 text-base bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md rounded-xl transition-all active:scale-[0.98]"
+          className="w-full h-12 text-sm bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md rounded-xl transition-all active:scale-[0.98] mb-4"
           onClick={handleVideoMarker}
         >
-          <Video className="w-5 h-5 mr-2" />
-          Ver no Vídeo (Marcar Tempo Geral)
+          <Video className="w-4 h-4 mr-2" />
+          Marcar Tempo de Vídeo
         </Button>
 
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-row items-center justify-between mt-6 mb-6">
+        <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-row items-center justify-between mb-4">
           <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Pontuação do Trecho Atual
+            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
+              Pontuação do Trecho
             </h3>
             <div className="flex items-end gap-1">
-              <span className="text-3xl font-black text-slate-900 leading-none">
+              <span className="text-2xl font-black text-slate-900 leading-none">
                 {currentSegmentScore}
               </span>
-              <span className="text-sm font-medium text-slate-500 mb-1">pts</span>
+              <span className="text-xs font-medium text-slate-500 mb-0.5">pts</span>
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Nível de Risco
+            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
+              Nível
             </h3>
             <Badge
               variant="outline"
-              className={cn('text-sm px-3 py-1 font-bold border-transparent', segmentLevelColor)}
+              className={cn('text-xs px-2 py-0.5 font-bold border-transparent', segmentLevelColor)}
             >
               {segmentLevel}
             </Badge>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
           {state.catalog.map((risk) => {
             const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
             return (
@@ -279,46 +284,47 @@ export default function FieldOperation() {
                 key={risk.id}
                 risk={risk}
                 count={count}
-                onTap={handleLogRisk}
+                onAdd={handleLogRisk}
+                onRemove={handleRemoveRisk}
                 onLongPressRisk={handleLongPress}
               />
             )
           })}
         </div>
 
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3 mt-8">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3 mt-6">
           <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
             <FileText className="w-4 h-4" /> Observação do Trecho
           </label>
           <Textarea
             placeholder="Adicione notas gerais sobre as condições deste trecho..."
-            className="resize-none h-20 bg-slate-50 border-slate-200"
+            className="resize-none h-20 bg-slate-50 border-slate-200 text-sm"
             value={segmentObservation}
             onChange={(e) => setSegmentObservation(e.target.value)}
           />
           <div className="flex gap-2">
             <Button
               variant={isRecordingObs ? 'destructive' : 'secondary'}
-              className="flex-1 font-semibold"
+              className="flex-1 font-semibold text-xs h-10"
               onClick={handleToggleObsAudio}
             >
               {isRecordingObs ? (
-                <Square className="w-4 h-4 mr-2" />
+                <Square className="w-3 h-3 mr-1.5" />
               ) : (
-                <Mic className="w-4 h-4 mr-2" />
+                <Mic className="w-3 h-3 mr-1.5" />
               )}
               {isRecordingObs ? 'Parar Gravação' : obsAudioUrl ? 'Regravar Áudio' : 'Gravar Áudio'}
             </Button>
             <Button
               onClick={handleRegisterObservation}
-              className="flex-1 font-semibold"
+              className="flex-1 font-semibold text-xs h-10"
               disabled={!segmentObservation.trim() && !obsAudioUrl}
             >
               Registrar
             </Button>
           </div>
           {obsAudioUrl && !isRecordingObs && (
-            <audio controls src={obsAudioUrl} className="w-full h-10 mt-2" />
+            <audio controls src={obsAudioUrl} className="w-full h-8 mt-2" />
           )}
         </div>
 
@@ -336,11 +342,11 @@ export default function FieldOperation() {
                   </span>
                   {obs.videoTimestamp && (
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 bg-slate-200 px-2 py-0.5 rounded-full">
-                      <Video className="w-3 h-3" /> Marcador de Vídeo
+                      <Video className="w-3 h-3" /> Marcador
                     </span>
                   )}
                 </div>
-                {obs.note && <p className="text-slate-700 font-medium">{obs.note}</p>}
+                {obs.note && <p className="text-slate-700 font-medium text-sm">{obs.note}</p>}
                 {obs.audioUrl && <audio controls src={obs.audioUrl} className="w-full h-8 mt-2" />}
               </div>
             ))}
