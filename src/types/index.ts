@@ -9,6 +9,7 @@ export interface RiskType {
   baseWeight: number
   category?: string
   description?: string
+  roadContext?: 'urbana' | 'rodoviaria'
 }
 
 export interface Route {
@@ -40,6 +41,7 @@ export interface RiskEvent {
   note?: string
   videoTimestamp?: string
   photoUrl?: string
+  photoUrls?: string[]
   audioUrl?: string
   synced: boolean
 }

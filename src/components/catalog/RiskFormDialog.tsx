@@ -129,6 +129,7 @@ const riskSchema = z.object({
   category: z.string().optional(),
   description: z.string().optional(),
   baseWeight: z.coerce.number().min(1).max(4, 'O peso deve ser de 1 a 4'),
+  roadContext: z.enum(['urbana', 'rodoviaria']).optional().default('rodoviaria'),
 })
 
 type RiskFormValues = z.infer<typeof riskSchema>
@@ -161,6 +162,7 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
           category: risk.category || '',
           description: risk.description || '',
           baseWeight: risk.baseWeight,
+          roadContext: risk.roadContext || 'rodoviaria',
         })
       } else {
         form.reset({
@@ -169,6 +171,7 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
           category: '',
           description: '',
           baseWeight: 1,
+          roadContext: 'rodoviaria',
         })
       }
     }
@@ -224,6 +227,28 @@ export function RiskFormDialog({ open, onOpenChange, risk, onSave }: RiskFormDia
                         </div>
                       ))}
                     </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="roadContext"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Contexto da Via</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o contexto" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="urbana">Via Urbana</SelectItem>
+                        <SelectItem value="rodoviaria">Via Rodoviária</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

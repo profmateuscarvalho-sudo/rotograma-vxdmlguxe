@@ -79,6 +79,7 @@ export default function Catalog() {
               <TableRow>
                 <TableHead>Risco</TableHead>
                 <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                <TableHead className="hidden md:table-cell">Contexto</TableHead>
                 <TableHead className="text-center">Peso / Nível</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -106,6 +107,11 @@ export default function Catalog() {
                   <TableCell className="hidden md:table-cell">
                     <Badge variant="secondary" className="font-medium bg-slate-100 text-slate-700">
                       {risk.category || 'Geral'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline" className="font-medium bg-white">
+                      {risk.roadContext === 'urbana' ? 'Via Urbana' : 'Via Rodoviária'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">

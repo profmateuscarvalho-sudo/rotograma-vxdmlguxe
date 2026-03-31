@@ -24,7 +24,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   const { state, updateEvent } = useAppStore()
   const [note, setNote] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
-  const [photoUrl, setPhotoUrl] = useState('')
+  const [photoUrls, setPhotoUrls] = useState<string[]>([])
   const [videoTimestamp, setVideoTimestamp] = useState('')
   const [timestamp, setTimestamp] = useState<number>(Date.now())
 
@@ -37,7 +37,7 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
       const event = state.events.find((e) => e.id === eventId)
       setNote(event?.note || '')
       setAudioUrl(event?.audioUrl || '')
-      setPhotoUrl(event?.photoUrl || '')
+      setPhotoUrls(event?.photoUrls || (event?.photoUrl ? [event.photoUrl] : []))
       setVideoTimestamp(event?.videoTimestamp || '')
       setTimestamp(event?.timestamp || Date.now())
     }
@@ -77,19 +77,47 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
   }
 
   const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
+    const files = Array.from(e.target.files || [])
+    let allowedFiles = files
+
+    if (photoUrls.length + files.length > 5) {
+      toast({
+        title: 'Limite de 5 fotos',
+        description: 'Apenas as fotos que couberem no limite foram adicionadas.',
+        variant: 'destructive',
+        duration: 3000,
+      })
+      allowedFiles = files.slice(0, 5 - photoUrls.length)
+    }
+
+    allowedFiles.forEach((file) => {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setPhotoUrl(reader.result as string)
+        setPhotoUrls((prev) => {
+          if (prev.length >= 5) return prev
+          return [...prev, reader.result as string]
+        })
       }
       reader.readAsDataURL(file)
-    }
+    })
+
+    if (e.target) e.target.value = ''
+  }
+
+  const handleRemovePhoto = (index: number) => {
+    setPhotoUrls((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSave = () => {
     if (eventId) {
-      updateEvent(eventId, { note, audioUrl, timestamp, photoUrl, videoTimestamp })
+      updateEvent(eventId, {
+        note,
+        audioUrl,
+        timestamp,
+        photoUrls,
+        photoUrl: photoUrls[0] || '',
+        videoTimestamp,
+      })
       toast({ title: 'Detalhes salvos', duration: 2000 })
     }
     onClose()
@@ -154,28 +182,53 @@ export function RiskDrawer({ eventId, onClose, riskName }: RiskDrawerProps) {
               </div>
             </div>
 
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handlePhotoCapture}
-            />
-            <Button
-              variant="outline"
-              className="w-full h-24 flex flex-col gap-2 bg-slate-50 border-dashed border-2 p-0 overflow-hidden relative"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {photoUrl ? (
-                <img src={photoUrl} className="w-full h-full object-cover" alt="Captured" />
-              ) : (
-                <>
-                  <Camera className="w-8 h-8 text-slate-400" />
-                  <span className="text-slate-500">Tirar Foto do Local</span>
-                </>
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex justify-between">
+                <span>Fotos do Local</span>
+                <span className="text-slate-500">{photoUrls.length}/5</span>
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handlePhotoCapture}
+              />
+
+              {photoUrls.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
+                  {photoUrls.map((url, i) => (
+                    <div key={i} className="relative w-20 h-20 shrink-0 snap-start">
+                      <img
+                        src={url}
+                        className="w-full h-full object-cover rounded-md border border-slate-200"
+                        alt={`Captured ${i}`}
+                      />
+                      <button
+                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md z-10"
+                        onClick={() => handleRemovePhoto(i)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-            </Button>
+
+              {photoUrls.length < 5 && (
+                <Button
+                  variant="outline"
+                  className="w-full h-16 flex items-center justify-center gap-2 bg-slate-50 border-dashed border-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="w-5 h-5" />
+                  <span>Adicionar Foto</span>
+                </Button>
+              )}
+            </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Observações Escritas</label>

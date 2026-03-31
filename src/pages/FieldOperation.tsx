@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   ChevronRight,
   ChevronLeft,
@@ -32,6 +33,7 @@ export default function FieldOperation() {
   const [flash, setFlash] = useState(false)
   const [drawerEventId, setDrawerEventId] = useState<string | null>(null)
   const [drawerRiskName, setDrawerRiskName] = useState('')
+  const [roadContext, setRoadContext] = useState<'urbana' | 'rodoviaria'>('rodoviaria')
 
   const [segmentObservation, setSegmentObservation] = useState('')
   const [isRecordingObs, setIsRecordingObs] = useState(false)
@@ -276,20 +278,41 @@ export default function FieldOperation() {
           </div>
         </div>
 
+        <Tabs
+          value={roadContext}
+          onValueChange={(v) => setRoadContext(v as 'urbana' | 'rodoviaria')}
+          className="w-full mb-4"
+        >
+          <TabsList className="grid w-full grid-cols-2 h-12 shadow-sm rounded-xl">
+            <TabsTrigger value="urbana" className="rounded-lg font-bold">
+              Via Urbana
+            </TabsTrigger>
+            <TabsTrigger value="rodoviaria" className="rounded-lg font-bold">
+              Via Rodoviária
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-          {state.catalog.map((risk) => {
-            const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
-            return (
-              <RiskButton
-                key={risk.id}
-                risk={risk}
-                count={count}
-                onAdd={handleLogRisk}
-                onRemove={handleRemoveRisk}
-                onLongPressRisk={handleLongPress}
-              />
+          {state.catalog
+            .filter(
+              (risk) =>
+                risk.roadContext === roadContext ||
+                (!risk.roadContext && roadContext === 'rodoviaria'),
             )
-          })}
+            .map((risk) => {
+              const count = currentEvents.filter((e) => e.riskTypeId === risk.id).length
+              return (
+                <RiskButton
+                  key={risk.id}
+                  risk={risk}
+                  count={count}
+                  onAdd={handleLogRisk}
+                  onRemove={handleRemoveRisk}
+                  onLongPressRisk={handleLongPress}
+                />
+              )
+            })}
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3 mt-6">
