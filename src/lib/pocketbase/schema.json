@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-03-31T18:14:16.396Z",
+  "generatedAt": "2026-04-02T19:04:52.885Z",
   "collections": [
     {
       "name": "users",
       "type": "auth",
       "apiRules": {
-        "list": "@request.auth.role = 'admin' || id = @request.auth.id",
+        "list": "@request.auth.role = 'admin'",
         "view": "@request.auth.role = 'admin' || id = @request.auth.id",
         "create": "@request.auth.role = 'admin'",
         "update": "@request.auth.role = 'admin' || id = @request.auth.id",
-        "delete": "@request.auth.role = 'admin' || id = @request.auth.id"
+        "delete": "@request.auth.role = 'admin'"
       },
       "fields": [
         {
@@ -29,21 +29,29 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "role",
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["admin", "evaluator"]
+          "selectValues": [
+            "admin",
+            "evaluator"
+          ]
         }
       ],
       "indexes": [
@@ -57,9 +65,9 @@
       "apiRules": {
         "list": "@request.auth.id != ''",
         "view": "@request.auth.id != ''",
-        "create": "@request.auth.role = 'admin'",
-        "update": "@request.auth.role = 'admin'",
-        "delete": "@request.auth.role = 'admin'"
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
       },
       "fields": [
         {
@@ -109,21 +117,29 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "road_context",
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["urbana", "rodoviaria"]
+          "selectValues": [
+            "urbana",
+            "rodoviaria"
+          ]
         }
       ],
       "indexes": []
@@ -132,8 +148,8 @@
       "name": "routes",
       "type": "base",
       "apiRules": {
-        "list": "@request.auth.role = 'admin' || user_id = @request.auth.id",
-        "view": "@request.auth.role = 'admin' || user_id = @request.auth.id",
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
         "create": "@request.auth.id != ''",
         "update": "@request.auth.id != ''",
         "delete": "@request.auth.id != ''"
@@ -150,7 +166,10 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["in_progress", "completed"]
+          "selectValues": [
+            "in_progress",
+            "completed"
+          ]
         },
         {
           "name": "user_id",
@@ -164,14 +183,55 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
+        },
+        {
+          "name": "origin",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "destination",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "kmPerSegment",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company_name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "conditions",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "evaluator_name",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []
@@ -230,14 +290,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "weight",
@@ -256,6 +321,12 @@
           "type": "text",
           "required": false,
           "system": false
+        },
+        {
+          "name": "segment_id",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []
@@ -264,11 +335,11 @@
       "name": "route_observations",
       "type": "base",
       "apiRules": {
-        "list": "@request.auth.id != \"\"",
-        "view": "@request.auth.id != \"\"",
-        "create": "@request.auth.id != \"\"",
-        "update": "@request.auth.id != \"\"",
-        "delete": "@request.auth.id != \"\""
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
       },
       "fields": [
         {
@@ -295,20 +366,89 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "video_timestamp",
           "type": "text",
           "required": false,
           "system": false
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "route_segments",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "route_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "routes"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "startKm",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "endKm",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
